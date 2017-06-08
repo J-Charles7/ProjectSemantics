@@ -17,18 +17,6 @@ t_RB = r'\}'
 t_SEQ = r';'
 t_COMMA = r','
 
-# def t_INT(t):
-#     r"\int"
-#     if t.value in types:
-#         t.type = types[t.value]
-#     return t
-#
-# def t_FLOAT(t):
-#     r"\float"
-#     if t.value in types:
-#         t.type = types[t.value]
-#     return t
-
 def t_NUMBER(t):
     r"\d+"
     t.value = int(t.value)
@@ -117,11 +105,6 @@ def p_listedeclarations(p):
     else :
         p[0] = [ p[1]]
 
-# start = 'declaration'
-# parser = yacc.yacc()
-# print(parser.parse("int rien;"))
-# print(parser.parse("float tout;"))
-
 
 def p_listevariables(p):
     '''
@@ -143,16 +126,8 @@ def p_main(p):
 start = 'main'
 parser = yacc.yacc()
 precedence = (('left', 'SEQ'))
-print(parser.parse("main(X, Y) { int rien; float tout; int autre; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } "))
+print(parser.parse("main(X, Y) { int rien; float tout; int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } "))
 
-# start = 'main'
-# parser = yacc.yacc()
-
-#Pour imposer une reduction gauche a partir des SEQ
-# precedence = (('left', 'SEQ'))
-# arbre = parser.parse("main(X) { while (X) {Y = Y + 1 ; X = X -1 } ; print (Y) ; } ")
-# print (arbre)
-#print(arbre.p_toAsm())
 
 
 
