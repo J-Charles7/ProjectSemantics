@@ -1,0 +1,451 @@
+Created by PLY version 3.10 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    RETURN
+
+Grammar
+
+Rule 0     S' -> main
+Rule 1     expression -> NUMBER
+Rule 2     expression -> ID
+Rule 3     expression -> expression OPBIN expression
+Rule 4     commande -> ID EQUAL expression
+Rule 5     commande -> commande SEQ commande
+Rule 6     commande -> WHILE LP expression RP LB commande RB
+Rule 7     declaration -> INT ID
+Rule 8     declaration -> FLOAT ID
+Rule 9     listedeclarations -> declaration SEQ
+Rule 10    listedeclarations -> declaration SEQ listedeclarations
+Rule 11    listevariables -> ID
+Rule 12    listevariables -> ID COMMA listevariables
+Rule 13    main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+
+Terminals, with rules where they appear
+
+COMMA                : 12
+EQUAL                : 4
+FLOAT                : 8
+ID                   : 2 4 7 8 11 12
+INT                  : 7
+LB                   : 6 13
+LP                   : 6 13 13
+MAIN                 : 13
+NUMBER               : 1
+OPBIN                : 3
+PRINT                : 13
+RB                   : 6 13
+RETURN               : 
+RP                   : 6 13 13
+SEQ                  : 5 9 10 13 13
+WHILE                : 6
+error                : 
+
+Nonterminals, with rules where they appear
+
+commande             : 5 5 6 13
+declaration          : 9 10
+expression           : 3 3 4 6 13
+listedeclarations    : 10 13
+listevariables       : 12 13
+main                 : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . main
+    (13) main -> . MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+
+    MAIN            shift and go to state 1
+
+    main                           shift and go to state 2
+
+state 1
+
+    (13) main -> MAIN . LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+
+    LP              shift and go to state 3
+
+
+state 2
+
+    (0) S' -> main .
+
+
+
+state 3
+
+    (13) main -> MAIN LP . listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    (11) listevariables -> . ID
+    (12) listevariables -> . ID COMMA listevariables
+
+    ID              shift and go to state 5
+
+    listevariables                 shift and go to state 4
+
+state 4
+
+    (13) main -> MAIN LP listevariables . RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+
+    RP              shift and go to state 6
+
+
+state 5
+
+    (11) listevariables -> ID .
+    (12) listevariables -> ID . COMMA listevariables
+
+    RP              reduce using rule 11 (listevariables -> ID .)
+    COMMA           shift and go to state 7
+
+
+state 6
+
+    (13) main -> MAIN LP listevariables RP . LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+
+    LB              shift and go to state 8
+
+
+state 7
+
+    (12) listevariables -> ID COMMA . listevariables
+    (11) listevariables -> . ID
+    (12) listevariables -> . ID COMMA listevariables
+
+    ID              shift and go to state 5
+
+    listevariables                 shift and go to state 9
+
+state 8
+
+    (13) main -> MAIN LP listevariables RP LB . listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    (9) listedeclarations -> . declaration SEQ
+    (10) listedeclarations -> . declaration SEQ listedeclarations
+    (7) declaration -> . INT ID
+    (8) declaration -> . FLOAT ID
+
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 12
+
+    listedeclarations              shift and go to state 10
+    declaration                    shift and go to state 13
+
+state 9
+
+    (12) listevariables -> ID COMMA listevariables .
+
+    RP              reduce using rule 12 (listevariables -> ID COMMA listevariables .)
+
+
+state 10
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations . commande SEQ PRINT LP expression RP SEQ RB
+    (4) commande -> . ID EQUAL expression
+    (5) commande -> . commande SEQ commande
+    (6) commande -> . WHILE LP expression RP LB commande RB
+
+    ID              shift and go to state 16
+    WHILE           shift and go to state 14
+
+    commande                       shift and go to state 15
+
+state 11
+
+    (7) declaration -> INT . ID
+
+    ID              shift and go to state 17
+
+
+state 12
+
+    (8) declaration -> FLOAT . ID
+
+    ID              shift and go to state 18
+
+
+state 13
+
+    (9) listedeclarations -> declaration . SEQ
+    (10) listedeclarations -> declaration . SEQ listedeclarations
+
+    SEQ             shift and go to state 19
+
+
+state 14
+
+    (6) commande -> WHILE . LP expression RP LB commande RB
+
+    LP              shift and go to state 20
+
+
+state 15
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande . SEQ PRINT LP expression RP SEQ RB
+    (5) commande -> commande . SEQ commande
+
+    SEQ             shift and go to state 21
+
+
+state 16
+
+    (4) commande -> ID . EQUAL expression
+
+    EQUAL           shift and go to state 22
+
+
+state 17
+
+    (7) declaration -> INT ID .
+
+    SEQ             reduce using rule 7 (declaration -> INT ID .)
+
+
+state 18
+
+    (8) declaration -> FLOAT ID .
+
+    SEQ             reduce using rule 8 (declaration -> FLOAT ID .)
+
+
+state 19
+
+    (9) listedeclarations -> declaration SEQ .
+    (10) listedeclarations -> declaration SEQ . listedeclarations
+    (9) listedeclarations -> . declaration SEQ
+    (10) listedeclarations -> . declaration SEQ listedeclarations
+    (7) declaration -> . INT ID
+    (8) declaration -> . FLOAT ID
+
+    ID              reduce using rule 9 (listedeclarations -> declaration SEQ .)
+    WHILE           reduce using rule 9 (listedeclarations -> declaration SEQ .)
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 12
+
+    listedeclarations              shift and go to state 23
+    declaration                    shift and go to state 13
+
+state 20
+
+    (6) commande -> WHILE LP . expression RP LB commande RB
+    (1) expression -> . NUMBER
+    (2) expression -> . ID
+    (3) expression -> . expression OPBIN expression
+
+    NUMBER          shift and go to state 24
+    ID              shift and go to state 26
+
+    expression                     shift and go to state 25
+
+state 21
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ . PRINT LP expression RP SEQ RB
+    (5) commande -> commande SEQ . commande
+    (4) commande -> . ID EQUAL expression
+    (5) commande -> . commande SEQ commande
+    (6) commande -> . WHILE LP expression RP LB commande RB
+
+    PRINT           shift and go to state 28
+    ID              shift and go to state 16
+    WHILE           shift and go to state 14
+
+    commande                       shift and go to state 27
+
+state 22
+
+    (4) commande -> ID EQUAL . expression
+    (1) expression -> . NUMBER
+    (2) expression -> . ID
+    (3) expression -> . expression OPBIN expression
+
+    NUMBER          shift and go to state 24
+    ID              shift and go to state 26
+
+    expression                     shift and go to state 29
+
+state 23
+
+    (10) listedeclarations -> declaration SEQ listedeclarations .
+
+    ID              reduce using rule 10 (listedeclarations -> declaration SEQ listedeclarations .)
+    WHILE           reduce using rule 10 (listedeclarations -> declaration SEQ listedeclarations .)
+
+
+state 24
+
+    (1) expression -> NUMBER .
+
+    OPBIN           reduce using rule 1 (expression -> NUMBER .)
+    RP              reduce using rule 1 (expression -> NUMBER .)
+    SEQ             reduce using rule 1 (expression -> NUMBER .)
+    RB              reduce using rule 1 (expression -> NUMBER .)
+
+
+state 25
+
+    (6) commande -> WHILE LP expression . RP LB commande RB
+    (3) expression -> expression . OPBIN expression
+
+    RP              shift and go to state 30
+    OPBIN           shift and go to state 31
+
+
+state 26
+
+    (2) expression -> ID .
+
+    OPBIN           reduce using rule 2 (expression -> ID .)
+    RP              reduce using rule 2 (expression -> ID .)
+    SEQ             reduce using rule 2 (expression -> ID .)
+    RB              reduce using rule 2 (expression -> ID .)
+
+
+state 27
+
+    (5) commande -> commande SEQ commande .
+    (5) commande -> commande . SEQ commande
+
+  ! shift/reduce conflict for SEQ resolved as shift
+    RB              reduce using rule 5 (commande -> commande SEQ commande .)
+    SEQ             shift and go to state 32
+
+  ! SEQ             [ reduce using rule 5 (commande -> commande SEQ commande .) ]
+
+
+state 28
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT . LP expression RP SEQ RB
+
+    LP              shift and go to state 33
+
+
+state 29
+
+    (4) commande -> ID EQUAL expression .
+    (3) expression -> expression . OPBIN expression
+
+    SEQ             reduce using rule 4 (commande -> ID EQUAL expression .)
+    RB              reduce using rule 4 (commande -> ID EQUAL expression .)
+    OPBIN           shift and go to state 31
+
+
+state 30
+
+    (6) commande -> WHILE LP expression RP . LB commande RB
+
+    LB              shift and go to state 34
+
+
+state 31
+
+    (3) expression -> expression OPBIN . expression
+    (1) expression -> . NUMBER
+    (2) expression -> . ID
+    (3) expression -> . expression OPBIN expression
+
+    NUMBER          shift and go to state 24
+    ID              shift and go to state 26
+
+    expression                     shift and go to state 35
+
+state 32
+
+    (5) commande -> commande SEQ . commande
+    (4) commande -> . ID EQUAL expression
+    (5) commande -> . commande SEQ commande
+    (6) commande -> . WHILE LP expression RP LB commande RB
+
+    ID              shift and go to state 16
+    WHILE           shift and go to state 14
+
+    commande                       shift and go to state 27
+
+state 33
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP . expression RP SEQ RB
+    (1) expression -> . NUMBER
+    (2) expression -> . ID
+    (3) expression -> . expression OPBIN expression
+
+    NUMBER          shift and go to state 24
+    ID              shift and go to state 26
+
+    expression                     shift and go to state 36
+
+state 34
+
+    (6) commande -> WHILE LP expression RP LB . commande RB
+    (4) commande -> . ID EQUAL expression
+    (5) commande -> . commande SEQ commande
+    (6) commande -> . WHILE LP expression RP LB commande RB
+
+    ID              shift and go to state 16
+    WHILE           shift and go to state 14
+
+    commande                       shift and go to state 37
+
+state 35
+
+    (3) expression -> expression OPBIN expression .
+    (3) expression -> expression . OPBIN expression
+
+  ! shift/reduce conflict for OPBIN resolved as shift
+    RP              reduce using rule 3 (expression -> expression OPBIN expression .)
+    SEQ             reduce using rule 3 (expression -> expression OPBIN expression .)
+    RB              reduce using rule 3 (expression -> expression OPBIN expression .)
+    OPBIN           shift and go to state 31
+
+  ! OPBIN           [ reduce using rule 3 (expression -> expression OPBIN expression .) ]
+
+
+state 36
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression . RP SEQ RB
+    (3) expression -> expression . OPBIN expression
+
+    RP              shift and go to state 38
+    OPBIN           shift and go to state 31
+
+
+state 37
+
+    (6) commande -> WHILE LP expression RP LB commande . RB
+    (5) commande -> commande . SEQ commande
+
+    RB              shift and go to state 39
+    SEQ             shift and go to state 32
+
+
+state 38
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP . SEQ RB
+
+    SEQ             shift and go to state 40
+
+
+state 39
+
+    (6) commande -> WHILE LP expression RP LB commande RB .
+
+    SEQ             reduce using rule 6 (commande -> WHILE LP expression RP LB commande RB .)
+    RB              reduce using rule 6 (commande -> WHILE LP expression RP LB commande RB .)
+
+
+state 40
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ . RB
+
+    RB              shift and go to state 41
+
+
+state 41
+
+    (13) main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB .
+
+    $end            reduce using rule 13 (main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for SEQ in state 27 resolved as shift
+WARNING: shift/reduce conflict for OPBIN in state 35 resolved as shift
