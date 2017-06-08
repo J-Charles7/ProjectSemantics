@@ -106,10 +106,21 @@ def p_listedeclarations(p):
         p[0] = [ p[1]]
 
 
-def p_listevariables(p):
+# def p_listevariables(p):
+#     '''
+#     listevariables : ID
+#                    | ID COMMA listevariables
+#     '''
+#     if len(p)>2:
+#         p[0] = p[3]
+#         p[0].insert(0,p[1])
+#     else:
+#         p[0] = [ p[1]]
+
+def p_listeparamsmain(p):
     '''
-    listevariables : ID
-                   | ID COMMA listevariables
+    listeparamsmain : declaration
+                   | declaration COMMA listeparamsmain
     '''
     if len(p)>2:
         p[0] = p[3]
@@ -117,16 +128,27 @@ def p_listevariables(p):
     else:
         p[0] = [ p[1]]
 
+def p_typeetmain(p):
+    '''
+    typeetmain : INT MAIN
+         | FLOAT MAIN
+    '''
+    p[0] = p[1]
+
+# '''
+# main : MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+# '''
 def p_main(p):
     '''
-    main : MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
     '''
+
     p[0] = ast.AST('prog', 'main')
-    p[0].sons = [p[3], p[6], p[7], p[11]]
+    p[0].sons = [p[1], p[3], p[6], p[7], p[11]]
 start = 'main'
 parser = yacc.yacc()
-precedence = (('left', 'SEQ'))
-print(parser.parse("main(X, Y) { int rien; float tout; int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } "))
+precedence = ('left', 'SEQ')
+print(parser.parse("float main(int rien, float tout) {  int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } "))
 
 
 
