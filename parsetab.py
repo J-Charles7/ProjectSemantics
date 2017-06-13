@@ -5,9 +5,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'mainNUMBER ID OPBIN LP RP LB RB EQUAL SEQ COMMA INT FLOAT PRINT WHILE MAIN RETURNexpression : NUMBER\n                | ID\n                | expression OPBIN expressioncommande : ID EQUAL expression\n                | commande SEQ commande\n                | WHILE LP expression RP LB commande RB\n    \n    declaration : INT ID\n                | FLOAT ID\n    \n    listedeclarations : declaration SEQ\n                      | declaration SEQ listedeclarations\n    \n    listevariables : ID\n                   | ID COMMA listevariables\n    \n    main : MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB\n    '
+_lr_signature = 'mainNUMBER ID OPBIN LP RP LB RB EQUAL SEQ COMMA INT FLOAT RETURN WHILE MAIN PRINTexpression : NUMBER\n                | ID\n                | expression OPBIN expressioncommande : ID EQUAL expression\n                | commande SEQ commande\n                | WHILE LP expression RP LB commande RB\n    \n    declaration : INT ID\n                | FLOAT ID\n    \n    listedeclarations : declaration SEQ\n                      | declaration SEQ listedeclarations\n    \n    listeparamsmain : declaration\n                   | declaration COMMA listeparamsmain\n    \n    typeetmain : INT MAIN\n         | FLOAT MAIN\n    \n    main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB\n    '
     
-_lr_action_items = {'RP':([4,5,9,24,25,26,35,36,],[6,-11,-12,-1,30,-2,-3,38,]),'RB':([24,26,27,29,35,37,39,40,],[-1,-2,-5,-4,-3,39,-6,41,]),'SEQ':([13,15,17,18,24,26,27,29,35,37,38,39,],[19,21,-7,-8,-1,-2,32,-4,-3,32,40,-6,]),'INT':([8,19,],[11,11,]),'OPBIN':([24,25,26,29,35,36,],[-1,31,-2,31,31,31,]),'FLOAT':([8,19,],[12,12,]),'EQUAL':([16,],[22,]),'NUMBER':([20,22,31,33,],[24,24,24,24,]),'WHILE':([10,19,21,23,32,34,],[14,-9,14,-10,14,14,]),'COMMA':([5,],[7,]),'LP':([1,14,28,],[3,20,33,]),'PRINT':([21,],[28,]),'LB':([6,30,],[8,34,]),'MAIN':([0,],[1,]),'ID':([3,7,10,11,12,19,20,21,22,23,31,32,33,34,],[5,5,16,17,18,-9,26,16,26,-10,26,16,26,16,]),'$end':([2,41,],[0,-13,]),}
+_lr_action_items = {'INT':([0,7,13,17,23,],[1,8,8,8,8,]),'NUMBER':([25,26,35,36,],[32,32,32,32,]),'SEQ':([12,15,19,20,28,30,31,32,39,41,42,44,],[-7,-8,23,24,34,-4,-2,-1,-3,43,34,-6,]),'OPBIN':([30,31,32,33,38,39,],[36,-2,-1,36,36,36,]),'COMMA':([9,12,15,],[13,-7,-8,]),'$end':([2,45,],[0,-15,]),'LP':([4,5,6,22,29,],[7,-13,-14,26,35,]),'LB':([14,37,],[17,40,]),'EQUAL':([21,],[25,]),'RB':([28,30,31,32,39,42,43,44,],[-5,-4,-2,-1,-3,44,45,-6,]),'ID':([8,11,18,23,24,25,26,27,34,35,36,40,],[12,15,21,-9,21,31,31,-10,21,31,31,21,]),'MAIN':([1,3,],[5,6,]),'RP':([9,10,12,15,16,31,32,33,38,39,],[-11,14,-7,-8,-12,-2,-1,37,41,-3,]),'PRINT':([24,],[29,]),'WHILE':([18,23,24,27,34,40,],[22,-9,22,-10,22,22,]),'FLOAT':([0,7,13,17,23,],[3,11,11,11,11,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'listedeclarations':([8,19,],[10,23,]),'listevariables':([3,7,],[4,9,]),'commande':([10,21,32,34,],[15,27,27,37,]),'declaration':([8,19,],[13,13,]),'main':([0,],[2,]),'expression':([20,22,31,33,],[25,29,35,36,]),}
+_lr_goto_items = {'listedeclarations':([17,23,],[18,27,]),'declaration':([7,13,17,23,],[9,9,19,19,]),'main':([0,],[2,]),'commande':([18,24,34,40,],[20,28,28,42,]),'listeparamsmain':([7,13,],[10,16,]),'expression':([25,26,35,36,],[30,33,38,39,]),'typeetmain':([0,],[4,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,17 +26,19 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> main","S'",1,None,None,None),
-  ('expression -> NUMBER','expression',1,'p_expression','compilateur.py',67),
-  ('expression -> ID','expression',1,'p_expression','compilateur.py',68),
-  ('expression -> expression OPBIN expression','expression',3,'p_expression','compilateur.py',69),
-  ('commande -> ID EQUAL expression','commande',3,'p_commande','compilateur.py',79),
-  ('commande -> commande SEQ commande','commande',3,'p_commande','compilateur.py',80),
-  ('commande -> WHILE LP expression RP LB commande RB','commande',7,'p_commande','compilateur.py',81),
-  ('declaration -> INT ID','declaration',2,'p_declaration','compilateur.py',96),
-  ('declaration -> FLOAT ID','declaration',2,'p_declaration','compilateur.py',97),
-  ('listedeclarations -> declaration SEQ','listedeclarations',2,'p_listedeclarations','compilateur.py',111),
-  ('listedeclarations -> declaration SEQ listedeclarations','listedeclarations',3,'p_listedeclarations','compilateur.py',112),
-  ('listevariables -> ID','listevariables',1,'p_listevariables','compilateur.py',132),
-  ('listevariables -> ID COMMA listevariables','listevariables',3,'p_listevariables','compilateur.py',133),
-  ('main -> MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB','main',14,'p_main','compilateur.py',143),
+  ('expression -> NUMBER','expression',1,'p_expression','compilateur.py',55),
+  ('expression -> ID','expression',1,'p_expression','compilateur.py',56),
+  ('expression -> expression OPBIN expression','expression',3,'p_expression','compilateur.py',57),
+  ('commande -> ID EQUAL expression','commande',3,'p_commande','compilateur.py',69),
+  ('commande -> commande SEQ commande','commande',3,'p_commande','compilateur.py',70),
+  ('commande -> WHILE LP expression RP LB commande RB','commande',7,'p_commande','compilateur.py',71),
+  ('declaration -> INT ID','declaration',2,'p_declaration','compilateur.py',86),
+  ('declaration -> FLOAT ID','declaration',2,'p_declaration','compilateur.py',87),
+  ('listedeclarations -> declaration SEQ','listedeclarations',2,'p_listedeclarations','compilateur.py',101),
+  ('listedeclarations -> declaration SEQ listedeclarations','listedeclarations',3,'p_listedeclarations','compilateur.py',102),
+  ('listeparamsmain -> declaration','listeparamsmain',1,'p_listeparamsmain','compilateur.py',124),
+  ('listeparamsmain -> declaration COMMA listeparamsmain','listeparamsmain',3,'p_listeparamsmain','compilateur.py',125),
+  ('typeetmain -> INT MAIN','typeetmain',2,'p_typeetmain','compilateur.py',135),
+  ('typeetmain -> FLOAT MAIN','typeetmain',2,'p_typeetmain','compilateur.py',136),
+  ('main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB','main',14,'p_main','compilateur.py',145),
 ]
