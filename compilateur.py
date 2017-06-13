@@ -57,11 +57,13 @@ def p_expression(p):
                 | expression OPBIN expression'''
     if len(p) > 2:
         p[0] = ast.AST('OPBIN', p[2])
-        p[0].sons = [p[1], p[3]]
+        p[0].sons = [p[1], p[3], p.lineno(2)]
     elif isinstance(p[1], str):
         p[0] = ast.AST('ID', p[1])
+        p[0].sons = [p.lineno(1)]
     else:
         p[0] = ast.AST('NUMBER', p[1])
+        p[0].sons = [p.lineno(1)]
 
 def p_commande(p):
     '''commande : ID EQUAL expression
@@ -70,14 +72,14 @@ def p_commande(p):
     '''
     if len(p) > 4:
         p[0] = ast.AST('commande', 'while')
-        p[0].sons = [p[3], p[6]]
+        p[0].sons = [p[3], p[6], p.lineno(1)]
     else:
         if p[2] == '=':
             p[0] = ast.AST('commande', 'asgnt')
-            p[0].sons = [p[1], p[3]]
+            p[0].sons = [p[1], p[3], p.lineno(2)]
         else:
             p[0] = ast.AST('commande', 'seq')
-            p[0].sons = [p[1], p[3]]
+            p[0].sons = [p[1], p[3], p.lineno(1)]
 
 def p_declaration(p):
     '''
@@ -150,7 +152,7 @@ parser = yacc.yacc()
 precedence = ('left', 'SEQ')
 arbre = parser.parse("float main(int rien, float tout) { int rien; int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } ")
 print(arbre)
-print(arbre.vars_decl())
+print(arbre.vars_util())
 
 
 
