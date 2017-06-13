@@ -46,9 +46,8 @@ finboucle%s:
     def pvars(self):
         vars = set()
         if self.type == 'prog':
-            vars.update(self.sons[0])
-            vars.update(self.sons[1].pvars())
-            vars.update(self.sons[2].pvars())
+            vars.update(self.sons[3].pvars())
+            vars.update(self.sons[4].pvars())
             return vars
         elif self.type == 'commande':
             if self.value == 'asgnt':
@@ -96,11 +95,29 @@ pop eax
                 vars.append(self.sons[1].com2List())
                 return vars
 
+    # def exp2List(self):
+    #     var_exp = []
+    #
+    #     if self.type == 'ID':
+    #         var_exp.append([self.value, self.sons[0]])
+    #         return  var_exp
+    #     elif self.type == 'OPBIN':
+    #         var_exp.append(self.sons[0].exp2List())
+    #         var_exp.append(self.sons[1].exp2List())
+    #         var_exp.append(self.sons[2])
+    #         return var_exp
+    #     elif self.type == 'NUMBER':
+    #         return var_exp
+    #     return var_exp
+
     def exp2List(self):
-            if self.type == 'ID':
-                return [self.sons[0], self.sons[1], self.sons[2]]
-            elif self.type == 'OPBIN':
-                return [self.sons[0].exp2List(), self.sons[1].exp2List(), self.sons[2]]
+        var_exp = set()
+        if self.type == 'ID':
+            var_exp.update([self.value, self.sons[0]])
+        elif self.type == 'OPBIN':
+            var_exp.update(self.sons[0].exp2List())
+            var_exp.update(self.sons[1].exp2List())
+        return  var_exp
 
     def dec2List(self):
         if self.type == 'declaration':
@@ -133,8 +150,9 @@ pop eax
     def vars_util(self):
         vars_utilisees = []
         if self.type == 'prog':
-            vars_utilisees.append(self.sons[3].com2List())
-            vars_utilisees.append(self.sons[4].exp2List())
+            # vars_utilisees.append(self.sons[3].com2List())
+            # vars_utilisees.append(self.sons[4].exp2List())
+            vars_utilisees = self.sons[3].com2List() + list(self.sons[4].exp2List())
         return vars_utilisees
 
 

@@ -150,9 +150,10 @@ def p_main(p):
 start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
-arbre = parser.parse("float main(int rien, float tout) { int rien; int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } ")
+arbre = parser.parse("float main(int rien, float tout) { int rien; int autre; float titi; while (X) { Y = Y + 5 ; "
+                     "\n X = s - 6 } ; print (Z) ; } ")
 print(arbre)
-print(arbre.vars_util())
+print(arbre.pvars())
 
 
 
