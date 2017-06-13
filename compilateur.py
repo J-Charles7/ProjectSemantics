@@ -86,13 +86,13 @@ def p_declaration(p):
     '''
     if p[1] == 'int':
         p[0] = ast.AST('declaration', 'int')
-        p[0].sons = [p[2]]
+        p[0].sons = [p[2], p.lineno(1), p.lineno(2)]
     elif p[1] == 'float':
         p[0] = ast.AST('declaration', 'float')
-        p[0].sons = [p[2]]
-    else:
-        p[0] = ast.AST('declaration', 'multiple')
-        p[0].sons = [p[1], p[3]]
+        p[0].sons = [p[2], p.lineno(1), p.lineno(2)]
+    # else:
+    #     p[0] = ast.AST('declaration', 'multiple')
+    #     p[0].sons = [p[1], p[3]]
 
 def p_listedeclarations(p):
     '''
@@ -148,7 +148,9 @@ def p_main(p):
 start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
-print(parser.parse("float main(int rien, float tout) {  int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } "))
+arbre = parser.parse("float main(int rien, float tout) { int rien; int autre; float titi; while (X) { Y = Y + 1 ; X = X - 1 } ; print (Y) ; } ")
+print(arbre)
+print(arbre.vars_decl())
 
 
 
