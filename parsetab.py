@@ -5,9 +5,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'mainNUMBER ID OPBIN LP RP LB RB EQUAL SEQ COMMA INT FLOAT WHILE MAIN PRINT RETURNexpression : NUMBER\n                | ID\n                | expression OPBIN expressioncommande : ID EQUAL expression\n                | commande SEQ commande\n                | WHILE LP expression RP LB commande RB\n    \n    declaration : INT ID\n                | FLOAT ID\n    \n    listedeclarations : declaration SEQ\n                      | declaration SEQ listedeclarations\n    \n    listeparamsmain : declaration\n                   | declaration COMMA listeparamsmain\n    \n    typeetmain : INT MAIN\n         | FLOAT MAIN\n    \n    main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB\n    '
+_lr_signature = 'mainNUMBER ID OPBIN LP RP LB RB EQUAL SEQ COMMA FLOAT INT MAIN RETURN WHILE PRINTexpression : NUMBER\n                | ID\n                | expression OPBIN expressioncommande : ID EQUAL expression\n                | commande SEQ commande\n                | WHILE LP expression RP LB commande RB\n    \n    declaration : INT ID\n                | FLOAT ID\n    \n    listedeclarations : declaration SEQ\n                      | declaration SEQ listedeclarations\n    \n    listeparamsmain : declaration\n                   | declaration COMMA listeparamsmain\n    \n    typeetmain : INT MAIN\n         | FLOAT MAIN\n    \n    main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB\n    '
     
-_lr_action_items = {'PRINT':([26,],[32,]),'EQUAL':([21,],[25,]),'COMMA':([11,12,14,],[15,-8,-7,]),'LP':([1,6,7,20,32,],[5,-14,-13,24,36,]),'$end':([3,45,],[0,-15,]),'WHILE':([18,23,26,27,37,39,],[20,-9,20,-10,20,20,]),'RP':([9,11,12,14,17,28,29,30,38,40,],[13,-11,-8,-7,-12,-2,-1,35,-3,42,]),'SEQ':([12,14,19,22,28,29,31,33,38,41,42,43,],[-8,-7,23,26,-2,-1,-4,37,-3,37,44,-6,]),'FLOAT':([0,5,15,16,23,],[2,8,8,8,8,]),'RB':([28,29,31,33,38,41,43,44,],[-2,-1,-4,-5,-3,43,-6,45,]),'INT':([0,5,15,16,23,],[4,10,10,10,10,]),'OPBIN':([28,29,30,31,38,40,],[-2,-1,34,34,34,34,]),'LB':([13,35,],[16,39,]),'ID':([8,10,18,23,24,25,26,27,34,36,37,39,],[12,14,21,-9,28,28,21,-10,28,28,21,21,]),'MAIN':([2,4,],[6,7,]),'NUMBER':([24,25,34,36,],[29,29,29,29,]),}
+_lr_action_items = {'MAIN':([1,3,],[5,7,]),'ID':([9,10,18,23,24,25,26,27,34,35,36,40,],[13,14,21,-9,21,31,31,-10,21,31,31,21,]),'EQUAL':([21,],[25,]),'LP':([2,5,7,22,29,],[6,-13,-14,26,35,]),'LB':([15,37,],[17,40,]),'NUMBER':([25,26,35,36,],[30,30,30,30,]),'FLOAT':([0,6,12,17,23,],[3,9,9,9,9,]),'PRINT':([24,],[29,]),'RP':([8,11,13,14,16,30,31,33,38,39,],[-11,15,-8,-7,-12,-1,-2,37,41,-3,]),'OPBIN':([30,31,32,33,38,39,],[-1,-2,36,36,36,36,]),'COMMA':([8,13,14,],[12,-8,-7,]),'RB':([28,30,31,32,39,42,43,44,],[-5,-1,-2,-4,-3,44,45,-6,]),'INT':([0,6,12,17,23,],[1,10,10,10,10,]),'SEQ':([13,14,19,20,28,30,31,32,39,41,42,44,],[-8,-7,23,24,34,-1,-2,-4,-3,43,34,-6,]),'$end':([4,45,],[0,-15,]),'WHILE':([18,23,24,27,34,40,],[22,-9,22,-10,22,22,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'typeetmain':([0,],[1,]),'listedeclarations':([16,23,],[18,27,]),'main':([0,],[3,]),'declaration':([5,15,16,23,],[11,11,19,19,]),'listeparamsmain':([5,15,],[9,17,]),'commande':([18,26,37,39,],[22,33,33,41,]),'expression':([24,25,34,36,],[30,31,38,40,]),}
+_lr_goto_items = {'listedeclarations':([17,23,],[18,27,]),'listeparamsmain':([6,12,],[11,16,]),'commande':([18,24,34,40,],[20,28,28,42,]),'typeetmain':([0,],[2,]),'declaration':([6,12,17,23,],[8,8,19,19,]),'main':([0,],[4,]),'expression':([25,26,35,36,],[32,33,38,39,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():

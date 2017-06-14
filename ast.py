@@ -163,7 +163,7 @@ pop eax
             declaree = 0
             infos_var_utilisee = str.split(var_utilisee,';')
             for var_declaree in var_decl:
-                if var_utilisee == var_declaree[1]:
+                if infos_var_utilisee[0] == var_declaree[1]:
                     declaree = 1
             if declaree == 0:
                 print('Erreur : variable %s non déclarée : ligne %s' % (infos_var_utilisee[0], infos_var_utilisee[1]))
