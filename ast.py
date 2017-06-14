@@ -155,9 +155,39 @@ pop eax
         #     vars_utilisees = self.sons[3].com2List() + list(self.sons[4].exp2List())
         # return vars_utilisees
 
+    def epurerListeVarsDecl (self, monSet):
+        monSetPerfect = []
+        corr = []
+        monSet = list(monSet)
+        for i in range(len(monSet)):
+            mesTokens1 = str.split(monSet[i], ';')
+            lines = set()
+            trouve = 0
+            for j in range(i + 1, len(monSet)):
+                mesTokens2 = str.split(monSet[j], ';')
+                if mesTokens1[0] == mesTokens2[0]:
+                    trouve = 1
+                    lines.update(mesTokens1[1])
+                    lines.update(mesTokens2[1])
+                    corr.append(j)
+            if trouve == 1:
+                lines = list(lines)
+                lines.sort()
+                lignes = lines[0]
+                for item in lines:
+                    if item != lines[0]:
+                        lignes = lignes + ', ' + item
+                monSet[i] = mesTokens1[0] + ';' + lignes
+
+        for i in range(len(monSet)):
+            if not corr.__contains__(i):
+                monSetPerfect.append(monSet[i])
+        print('Perfect %s' % (monSetPerfect))
+        return monSetPerfect
 
     def verifier_variables(self):
-        var_util = self.pvars()
+        var_util = self.epurerListeVarsDecl(self.pvars())
+        print('Var_util : %s ' % var_util)
         var_decl = self.vars_decl()
         for var_utilisee in var_util:
             declaree = 0
@@ -166,7 +196,8 @@ pop eax
                 if infos_var_utilisee[0] == var_declaree[1]:
                     declaree = 1
             if declaree == 0:
-                print('Erreur : variable %s non déclarée : ligne %s' % (infos_var_utilisee[0], infos_var_utilisee[1]))
+                print('Erreur : variable %s non déclarée : ligne(s) %s' %
+                      (infos_var_utilisee[0], infos_var_utilisee[1]))
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
