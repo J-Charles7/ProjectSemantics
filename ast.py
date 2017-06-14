@@ -95,20 +95,6 @@ pop eax
                 vars.append(self.sons[1].com2List())
                 return vars
 
-    # def exp2List(self):
-    #     var_exp = []
-    #
-    #     if self.type == 'ID':
-    #         var_exp.append([self.value, self.sons[0]])
-    #         return  var_exp
-    #     elif self.type == 'OPBIN':
-    #         var_exp.append(self.sons[0].exp2List())
-    #         var_exp.append(self.sons[1].exp2List())
-    #         var_exp.append(self.sons[2])
-    #         return var_exp
-    #     elif self.type == 'NUMBER':
-    #         return var_exp
-    #     return var_exp
 
     def exp2List(self):
         var_exp = set()
@@ -174,7 +160,6 @@ pop eax
         for i in range(len(monSet)):
             if not corr.__contains__(i):
                 monSetPerfect.append(monSet[i])
-        # print('Perfect %s' % (monSetPerfect))
         return monSetPerfect
 
     def verifier_variables(self):
@@ -204,7 +189,7 @@ pop eax
                     if param[0] == var_declaree[0]:
                         declaree = 2
             if declaree == 1:
-                print('Erreur : variable %s déclarée (ligne %s) et utilisée en paramètre (ligne %s)'
+                print('Erreur : variable %s déclarée (ligne %s) et utilisée en paramètre (ligne %s) '
                       'dans le main mais avec des types différents'%
                       (param[1], var_declaree[3], param[3]))
             if declaree == 0:
@@ -227,7 +212,16 @@ pop eax
                     print('Erreur : redéclaration de la variable %s (ligne %s) déjà déclarée (ligne %s)' %
                           ((var_decl[j][1]), var_decl[j][3], var_decl[i][3]))
 
+    def verifier_valeur_retour(self):
+        if self.type == 'prog':
+            print('Type attendu : %s et Type reçu : %s' % (self.sons[0][0], self.sons[5].value))
+            if self.sons[0][0] == 'int' and self.sons[5].value == 'float':
+                print('Erreur : valeur de retour trouvée de type %s (ligne %s) et '
+                      'valeur de retour attendue de type %s (ligne %s)' %
+                      (self.sons[5].value, self.sons[5].sons[1], self.sons[0][0], self.sons[0][1]))
+
     def verifier_typage_operations(self):
+
         pass
 
     def init_vars(self, moule):

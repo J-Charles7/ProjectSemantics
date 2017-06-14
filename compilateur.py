@@ -1,9 +1,10 @@
 import ply.lex as lex
-mots_cle = {'while' : 'WHILE', 'main' : 'MAIN', 'return' : 'RETURN', 'print' : 'PRINT'}
+mots_cle = {'while' : 'WHILE', 'main' : 'MAIN', 'return': 'RETURN', 'print' : 'PRINT'}
 types = {'float' : 'FLOAT', 'int' : 'INT'}
 tokens = ['NUMBER', 'ID', 'OPBIN', 'LP', 'RP', 'LB', 'RB', 'EQUAL', 'SEQ', 'COMMA'] \
          + list(types.values())\
-         + list(mots_cle.values())
+         + list(mots_cle.values())\
+         # + ['ENTIER', 'REEL']
 def t_OPBIN(t):
     r"[\+\-\*\=\<\>\!\/]+"
     if t.value == '=':
@@ -17,10 +18,33 @@ t_RB = r'\}'
 t_SEQ = r';'
 t_COMMA = r','
 
+# def t_ENTIER(t):
+#     # r'-?\d+'
+#     r'[+]?[0-9]+'
+#     t.value = int(t.value)
+#     return t
+#
+# def t_REEL(t):
+#     r'-?\d+\.\d*([eE]-?\d+)?'
+#     # r'-?\d +.\d + '
+#     # r'(?<=\s)[+-]?[0-9]+\.[0-9]+([Ee][+-]?[0-9]+)?(?=\s)'
+#     t.value = float(t.value)
+#     return t
+
 def t_NUMBER(t):
-    r"\d+"
-    t.value = int(t.value)
-    #t.lineno = t.lineno + 1
+    # r'(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]+)?'
+    # r"\d+"
+    # t.value = int(t.value)
+    # r'-?\d+\.\d*([eE]-?\d+)?'
+    # r'^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
+    r'(^[+-]?0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]+)?'
+    if '.' in t.value or 'e' in t.value or '-' in t.value:
+        # t.type = 'float'
+        t.value = float(t.value)
+    else:
+        # t.type = 'int'
+        t.value = (int)(t.value)
+
     return t
 
 def t_newline(t):
@@ -35,11 +59,15 @@ def t_ID(t):
         t.type = types[t.value]
     return t
 
+# def t_error(t):
+#     raise SyntaxError("syntax error on line %d near '%s'" %
+#         (t.lineno, t.value))
+
 t_ignore = " \t"
 lexer = lex.lex()
 
 uncode = " while (x) { int float x = z + 33+45 ; x = 18 }"
-lexer.input("main(z, t) { %s ; print (y) ;}" % uncode)
+lexer.input("main(z, t) { %s ; print (y) ; return -72;}" % uncode)
 
 while True:
     tok = lexer.token()
@@ -52,9 +80,13 @@ import ply.yacc as yacc
 import ast
 
 def p_expression(p):
+    # '''expression : ENTIER
+    #               | REEL
+    #               | ID
+    #               | expression OPBIN expression'''
     '''expression : NUMBER
-                | ID
-                | expression OPBIN expression'''
+                  | ID
+                  | expression OPBIN expression'''
     if len(p) > 2:
         p[0] = ast.AST('OPBIN', p[2])
         p[0].sons = [p[1], p[3], p.lineno(2)]
@@ -92,9 +124,6 @@ def p_declaration(p):
     elif p[1] == 'float':
         p[0] = ast.AST('declaration', 'float')
         p[0].sons = [p[2], p.lineno(1), p.lineno(2)]
-    # else:
-    #     p[0] = ast.AST('declaration', 'multiple')
-    #     p[0].sons = [p[1], p[3]]
 
 def p_listedeclarations(p):
     '''
@@ -107,17 +136,6 @@ def p_listedeclarations(p):
     else :
         p[0] = [ p[1]]
 
-
-# def p_listevariables(p):
-#     '''
-#     listevariables : ID
-#                    | ID COMMA listevariables
-#     '''
-#     if len(p)>2:
-#         p[0] = p[3]
-#         p[0].insert(0,p[1])
-#     else:
-#         p[0] = [ p[1]]
 
 def p_listeparamsmain(p):
     '''
@@ -135,25 +153,43 @@ def p_typeetmain(p):
     typeetmain : INT MAIN
          | FLOAT MAIN
     '''
-    p[0] = p[1]
+    p[0] = [p[1], p.lineno(1)]
 
+def p_returnmainvalue(p):
+    # '''
+    # returnmainvalue : RETURN ENTIER SEQ
+    #                 | RETURN FLOAT SEQ
+    # '''
+    '''
+    returnmainvalue : RETURN NUMBER SEQ
+    '''
+    if isinstance(p[2], int):
+        p[0] = ast.AST('return', 'int')
+        p[0].sons = [p[2], p.lineno(2)]
+    elif isinstance(p[2], float):
+        p[0] = ast.AST('return', 'float')
+        p[0].sons = [p[2], p.lineno(2)]
 # '''
 # main : MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
 # '''
 def p_main(p):
     '''
-    main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
     '''
 
     p[0] = ast.AST('prog', 'main')
-    p[0].sons = [p[1], p[3], p[6], p[7], p[11]]
+    p[0].sons = [p[1], p[3], p[6], p[7], p[11], p[14]]
 start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
-arbre = parser.parse("float main(int rien, float tout, int affaire, float affaire) {float Z; int Z; float rien; int autre; float titi; while (X) { Y = Y + 5 ; "
-                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; } ")
+arbre = parser.parse("int main(int rien) {float Z; float titi; while (X) { Y = Y + 5 ; "
+                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return -10;} ")
+# arbre = parser.parse("float main(int rien, float tout, int affaire, float affaire) {float Z; int Z; float rien; int autre; float titi; while (X) { Y = Y + 5 ; "
+#                      "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return 0;} ")
 print(arbre)
-print(arbre.verifier_variables())
+# print(arbre.verifier_variables())
+# print(arbre.verifier_valeur_retour())
+arbre.verifier_valeur_retour()
 
 
 
