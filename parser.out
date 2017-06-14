@@ -1,9 +1,5 @@
 Created by PLY version 3.10 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    RETURN
-
 Grammar
 
 Rule 0     S' -> main
@@ -21,7 +17,8 @@ Rule 11    listeparamsmain -> declaration
 Rule 12    listeparamsmain -> declaration COMMA listeparamsmain
 Rule 13    typeetmain -> INT MAIN
 Rule 14    typeetmain -> FLOAT MAIN
-Rule 15    main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+Rule 15    returnmainvalue -> RETURN NUMBER SEQ
+Rule 16    main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
 
 Terminals, with rules where they appear
 
@@ -30,130 +27,147 @@ EQUAL                : 4
 FLOAT                : 8 14
 ID                   : 2 4 7 8
 INT                  : 7 13
-LB                   : 6 15
-LP                   : 6 15 15
+LB                   : 6 16
+LP                   : 6 16 16
 MAIN                 : 13 14
-NUMBER               : 1
+NUMBER               : 1 15
 OPBIN                : 3
-PRINT                : 15
-RB                   : 6 15
-RETURN               : 
-RP                   : 6 15 15
-SEQ                  : 5 9 10 15 15
+PRINT                : 16
+RB                   : 6 16
+RETURN               : 15
+RP                   : 6 16 16
+SEQ                  : 5 9 10 15 16 16
 WHILE                : 6
 error                : 
 
 Nonterminals, with rules where they appear
 
-commande             : 5 5 6 15
+commande             : 5 5 6 16
 declaration          : 9 10 11 12
-expression           : 3 3 4 6 15
-listedeclarations    : 10 15
-listeparamsmain      : 12 15
+expression           : 3 3 4 6 16
+listedeclarations    : 10 16
+listeparamsmain      : 12 16
 main                 : 0
-typeetmain           : 15
+returnmainvalue      : 16
+typeetmain           : 16
 
 Parsing method: LALR
 
 state 0
 
     (0) S' -> . main
-    (15) main -> . typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    (16) main -> . typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
     (13) typeetmain -> . INT MAIN
     (14) typeetmain -> . FLOAT MAIN
 
-    INT             shift and go to state 1
-    FLOAT           shift and go to state 3
+    INT             shift and go to state 2
+    FLOAT           shift and go to state 1
 
-    typeetmain                     shift and go to state 2
-    main                           shift and go to state 4
+    typeetmain                     shift and go to state 4
+    main                           shift and go to state 3
 
 state 1
 
-    (13) typeetmain -> INT . MAIN
+    (14) typeetmain -> FLOAT . MAIN
 
     MAIN            shift and go to state 5
 
 
 state 2
 
-    (15) main -> typeetmain . LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    (13) typeetmain -> INT . MAIN
 
-    LP              shift and go to state 6
+    MAIN            shift and go to state 6
 
 
 state 3
-
-    (14) typeetmain -> FLOAT . MAIN
-
-    MAIN            shift and go to state 7
-
-
-state 4
 
     (0) S' -> main .
 
 
 
+state 4
+
+    (16) main -> typeetmain . LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
+
+    LP              shift and go to state 7
+
+
 state 5
-
-    (13) typeetmain -> INT MAIN .
-
-    LP              reduce using rule 13 (typeetmain -> INT MAIN .)
-
-
-state 6
-
-    (15) main -> typeetmain LP . listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
-    (11) listeparamsmain -> . declaration
-    (12) listeparamsmain -> . declaration COMMA listeparamsmain
-    (7) declaration -> . INT ID
-    (8) declaration -> . FLOAT ID
-
-    INT             shift and go to state 10
-    FLOAT           shift and go to state 9
-
-    listeparamsmain                shift and go to state 11
-    declaration                    shift and go to state 8
-
-state 7
 
     (14) typeetmain -> FLOAT MAIN .
 
     LP              reduce using rule 14 (typeetmain -> FLOAT MAIN .)
 
 
+state 6
+
+    (13) typeetmain -> INT MAIN .
+
+    LP              reduce using rule 13 (typeetmain -> INT MAIN .)
+
+
+state 7
+
+    (16) main -> typeetmain LP . listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
+    (11) listeparamsmain -> . declaration
+    (12) listeparamsmain -> . declaration COMMA listeparamsmain
+    (7) declaration -> . INT ID
+    (8) declaration -> . FLOAT ID
+
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 8
+
+    declaration                    shift and go to state 10
+    listeparamsmain                shift and go to state 9
+
 state 8
+
+    (8) declaration -> FLOAT . ID
+
+    ID              shift and go to state 12
+
+
+state 9
+
+    (16) main -> typeetmain LP listeparamsmain . RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
+
+    RP              shift and go to state 13
+
+
+state 10
 
     (11) listeparamsmain -> declaration .
     (12) listeparamsmain -> declaration . COMMA listeparamsmain
 
     RP              reduce using rule 11 (listeparamsmain -> declaration .)
-    COMMA           shift and go to state 12
-
-
-state 9
-
-    (8) declaration -> FLOAT . ID
-
-    ID              shift and go to state 13
-
-
-state 10
-
-    (7) declaration -> INT . ID
-
-    ID              shift and go to state 14
+    COMMA           shift and go to state 14
 
 
 state 11
 
-    (15) main -> typeetmain LP listeparamsmain . RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    (7) declaration -> INT . ID
 
-    RP              shift and go to state 15
+    ID              shift and go to state 15
 
 
 state 12
+
+    (8) declaration -> FLOAT ID .
+
+    COMMA           reduce using rule 8 (declaration -> FLOAT ID .)
+    RP              reduce using rule 8 (declaration -> FLOAT ID .)
+    SEQ             reduce using rule 8 (declaration -> FLOAT ID .)
+
+
+state 13
+
+    (16) main -> typeetmain LP listeparamsmain RP . LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
+
+    LB              shift and go to state 16
+
+
+state 14
 
     (12) listeparamsmain -> declaration COMMA . listeparamsmain
     (11) listeparamsmain -> . declaration
@@ -161,69 +175,53 @@ state 12
     (7) declaration -> . INT ID
     (8) declaration -> . FLOAT ID
 
-    INT             shift and go to state 10
-    FLOAT           shift and go to state 9
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 8
 
-    declaration                    shift and go to state 8
-    listeparamsmain                shift and go to state 16
-
-state 13
-
-    (8) declaration -> FLOAT ID .
-
-    SEQ             reduce using rule 8 (declaration -> FLOAT ID .)
-    COMMA           reduce using rule 8 (declaration -> FLOAT ID .)
-    RP              reduce using rule 8 (declaration -> FLOAT ID .)
-
-
-state 14
-
-    (7) declaration -> INT ID .
-
-    SEQ             reduce using rule 7 (declaration -> INT ID .)
-    COMMA           reduce using rule 7 (declaration -> INT ID .)
-    RP              reduce using rule 7 (declaration -> INT ID .)
-
+    declaration                    shift and go to state 10
+    listeparamsmain                shift and go to state 17
 
 state 15
 
-    (15) main -> typeetmain LP listeparamsmain RP . LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
+    (7) declaration -> INT ID .
 
-    LB              shift and go to state 17
+    COMMA           reduce using rule 7 (declaration -> INT ID .)
+    RP              reduce using rule 7 (declaration -> INT ID .)
+    SEQ             reduce using rule 7 (declaration -> INT ID .)
 
 
 state 16
+
+    (16) main -> typeetmain LP listeparamsmain RP LB . listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
+    (9) listedeclarations -> . declaration SEQ
+    (10) listedeclarations -> . declaration SEQ listedeclarations
+    (7) declaration -> . INT ID
+    (8) declaration -> . FLOAT ID
+
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 8
+
+    listedeclarations              shift and go to state 18
+    declaration                    shift and go to state 19
+
+state 17
 
     (12) listeparamsmain -> declaration COMMA listeparamsmain .
 
     RP              reduce using rule 12 (listeparamsmain -> declaration COMMA listeparamsmain .)
 
 
-state 17
-
-    (15) main -> typeetmain LP listeparamsmain RP LB . listedeclarations commande SEQ PRINT LP expression RP SEQ RB
-    (9) listedeclarations -> . declaration SEQ
-    (10) listedeclarations -> . declaration SEQ listedeclarations
-    (7) declaration -> . INT ID
-    (8) declaration -> . FLOAT ID
-
-    INT             shift and go to state 10
-    FLOAT           shift and go to state 9
-
-    listedeclarations              shift and go to state 18
-    declaration                    shift and go to state 19
-
 state 18
 
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations . commande SEQ PRINT LP expression RP SEQ RB
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations . commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
     (4) commande -> . ID EQUAL expression
     (5) commande -> . commande SEQ commande
     (6) commande -> . WHILE LP expression RP LB commande RB
 
-    ID              shift and go to state 21
-    WHILE           shift and go to state 22
+    ID              shift and go to state 20
+    WHILE           shift and go to state 21
 
-    commande                       shift and go to state 20
+    commande                       shift and go to state 22
 
 state 19
 
@@ -235,24 +233,24 @@ state 19
 
 state 20
 
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande . SEQ PRINT LP expression RP SEQ RB
-    (5) commande -> commande . SEQ commande
+    (4) commande -> ID . EQUAL expression
 
-    SEQ             shift and go to state 24
+    EQUAL           shift and go to state 24
 
 
 state 21
 
-    (4) commande -> ID . EQUAL expression
+    (6) commande -> WHILE . LP expression RP LB commande RB
 
-    EQUAL           shift and go to state 25
+    LP              shift and go to state 25
 
 
 state 22
 
-    (6) commande -> WHILE . LP expression RP LB commande RB
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande . SEQ PRINT LP expression RP SEQ returnmainvalue RB
+    (5) commande -> commande . SEQ commande
 
-    LP              shift and go to state 26
+    SEQ             shift and go to state 26
 
 
 state 23
@@ -266,49 +264,49 @@ state 23
 
     ID              reduce using rule 9 (listedeclarations -> declaration SEQ .)
     WHILE           reduce using rule 9 (listedeclarations -> declaration SEQ .)
-    INT             shift and go to state 10
-    FLOAT           shift and go to state 9
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 8
 
     listedeclarations              shift and go to state 27
     declaration                    shift and go to state 19
 
 state 24
 
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ . PRINT LP expression RP SEQ RB
-    (5) commande -> commande SEQ . commande
-    (4) commande -> . ID EQUAL expression
-    (5) commande -> . commande SEQ commande
-    (6) commande -> . WHILE LP expression RP LB commande RB
-
-    PRINT           shift and go to state 29
-    ID              shift and go to state 21
-    WHILE           shift and go to state 22
-
-    commande                       shift and go to state 28
-
-state 25
-
     (4) commande -> ID EQUAL . expression
     (1) expression -> . NUMBER
     (2) expression -> . ID
     (3) expression -> . expression OPBIN expression
 
-    NUMBER          shift and go to state 30
-    ID              shift and go to state 31
+    NUMBER          shift and go to state 29
+    ID              shift and go to state 28
 
-    expression                     shift and go to state 32
+    expression                     shift and go to state 30
 
-state 26
+state 25
 
     (6) commande -> WHILE LP . expression RP LB commande RB
     (1) expression -> . NUMBER
     (2) expression -> . ID
     (3) expression -> . expression OPBIN expression
 
-    NUMBER          shift and go to state 30
-    ID              shift and go to state 31
+    NUMBER          shift and go to state 29
+    ID              shift and go to state 28
 
-    expression                     shift and go to state 33
+    expression                     shift and go to state 31
+
+state 26
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ . PRINT LP expression RP SEQ returnmainvalue RB
+    (5) commande -> commande SEQ . commande
+    (4) commande -> . ID EQUAL expression
+    (5) commande -> . commande SEQ commande
+    (6) commande -> . WHILE LP expression RP LB commande RB
+
+    PRINT           shift and go to state 32
+    ID              shift and go to state 20
+    WHILE           shift and go to state 21
+
+    commande                       shift and go to state 33
 
 state 27
 
@@ -320,24 +318,15 @@ state 27
 
 state 28
 
-    (5) commande -> commande SEQ commande .
-    (5) commande -> commande . SEQ commande
+    (2) expression -> ID .
 
-  ! shift/reduce conflict for SEQ resolved as shift
-    RB              reduce using rule 5 (commande -> commande SEQ commande .)
-    SEQ             shift and go to state 34
-
-  ! SEQ             [ reduce using rule 5 (commande -> commande SEQ commande .) ]
+    RP              reduce using rule 2 (expression -> ID .)
+    OPBIN           reduce using rule 2 (expression -> ID .)
+    SEQ             reduce using rule 2 (expression -> ID .)
+    RB              reduce using rule 2 (expression -> ID .)
 
 
 state 29
-
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT . LP expression RP SEQ RB
-
-    LP              shift and go to state 35
-
-
-state 30
 
     (1) expression -> NUMBER .
 
@@ -347,88 +336,88 @@ state 30
     RB              reduce using rule 1 (expression -> NUMBER .)
 
 
-state 31
-
-    (2) expression -> ID .
-
-    RP              reduce using rule 2 (expression -> ID .)
-    OPBIN           reduce using rule 2 (expression -> ID .)
-    SEQ             reduce using rule 2 (expression -> ID .)
-    RB              reduce using rule 2 (expression -> ID .)
-
-
-state 32
+state 30
 
     (4) commande -> ID EQUAL expression .
     (3) expression -> expression . OPBIN expression
 
-    SEQ             reduce using rule 4 (commande -> ID EQUAL expression .)
     RB              reduce using rule 4 (commande -> ID EQUAL expression .)
-    OPBIN           shift and go to state 36
+    SEQ             reduce using rule 4 (commande -> ID EQUAL expression .)
+    OPBIN           shift and go to state 34
 
 
-state 33
+state 31
 
     (6) commande -> WHILE LP expression . RP LB commande RB
     (3) expression -> expression . OPBIN expression
 
-    RP              shift and go to state 37
-    OPBIN           shift and go to state 36
+    RP              shift and go to state 35
+    OPBIN           shift and go to state 34
+
+
+state 32
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT . LP expression RP SEQ returnmainvalue RB
+
+    LP              shift and go to state 36
+
+
+state 33
+
+    (5) commande -> commande SEQ commande .
+    (5) commande -> commande . SEQ commande
+
+  ! shift/reduce conflict for SEQ resolved as shift
+    RB              reduce using rule 5 (commande -> commande SEQ commande .)
+    SEQ             shift and go to state 37
+
+  ! SEQ             [ reduce using rule 5 (commande -> commande SEQ commande .) ]
 
 
 state 34
-
-    (5) commande -> commande SEQ . commande
-    (4) commande -> . ID EQUAL expression
-    (5) commande -> . commande SEQ commande
-    (6) commande -> . WHILE LP expression RP LB commande RB
-
-    ID              shift and go to state 21
-    WHILE           shift and go to state 22
-
-    commande                       shift and go to state 28
-
-state 35
-
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP . expression RP SEQ RB
-    (1) expression -> . NUMBER
-    (2) expression -> . ID
-    (3) expression -> . expression OPBIN expression
-
-    NUMBER          shift and go to state 30
-    ID              shift and go to state 31
-
-    expression                     shift and go to state 38
-
-state 36
 
     (3) expression -> expression OPBIN . expression
     (1) expression -> . NUMBER
     (2) expression -> . ID
     (3) expression -> . expression OPBIN expression
 
-    NUMBER          shift and go to state 30
-    ID              shift and go to state 31
+    NUMBER          shift and go to state 29
+    ID              shift and go to state 28
 
-    expression                     shift and go to state 39
+    expression                     shift and go to state 38
 
-state 37
+state 35
 
     (6) commande -> WHILE LP expression RP . LB commande RB
 
-    LB              shift and go to state 40
+    LB              shift and go to state 39
 
+
+state 36
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP . expression RP SEQ returnmainvalue RB
+    (1) expression -> . NUMBER
+    (2) expression -> . ID
+    (3) expression -> . expression OPBIN expression
+
+    NUMBER          shift and go to state 29
+    ID              shift and go to state 28
+
+    expression                     shift and go to state 40
+
+state 37
+
+    (5) commande -> commande SEQ . commande
+    (4) commande -> . ID EQUAL expression
+    (5) commande -> . commande SEQ commande
+    (6) commande -> . WHILE LP expression RP LB commande RB
+
+    ID              shift and go to state 20
+    WHILE           shift and go to state 21
+
+    commande                       shift and go to state 33
 
 state 38
-
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression . RP SEQ RB
-    (3) expression -> expression . OPBIN expression
-
-    RP              shift and go to state 41
-    OPBIN           shift and go to state 36
-
-
-state 39
 
     (3) expression -> expression OPBIN expression .
     (3) expression -> expression . OPBIN expression
@@ -437,62 +426,101 @@ state 39
     RP              reduce using rule 3 (expression -> expression OPBIN expression .)
     SEQ             reduce using rule 3 (expression -> expression OPBIN expression .)
     RB              reduce using rule 3 (expression -> expression OPBIN expression .)
-    OPBIN           shift and go to state 36
+    OPBIN           shift and go to state 34
 
   ! OPBIN           [ reduce using rule 3 (expression -> expression OPBIN expression .) ]
 
 
-state 40
+state 39
 
     (6) commande -> WHILE LP expression RP LB . commande RB
     (4) commande -> . ID EQUAL expression
     (5) commande -> . commande SEQ commande
     (6) commande -> . WHILE LP expression RP LB commande RB
 
-    ID              shift and go to state 21
-    WHILE           shift and go to state 22
+    ID              shift and go to state 20
+    WHILE           shift and go to state 21
 
-    commande                       shift and go to state 42
+    commande                       shift and go to state 41
+
+state 40
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression . RP SEQ returnmainvalue RB
+    (3) expression -> expression . OPBIN expression
+
+    RP              shift and go to state 42
+    OPBIN           shift and go to state 34
+
 
 state 41
-
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP . SEQ RB
-
-    SEQ             shift and go to state 43
-
-
-state 42
 
     (6) commande -> WHILE LP expression RP LB commande . RB
     (5) commande -> commande . SEQ commande
 
-    RB              shift and go to state 44
-    SEQ             shift and go to state 34
+    RB              shift and go to state 43
+    SEQ             shift and go to state 37
+
+
+state 42
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP . SEQ returnmainvalue RB
+
+    SEQ             shift and go to state 44
 
 
 state 43
 
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ . RB
+    (6) commande -> WHILE LP expression RP LB commande RB .
 
-    RB              shift and go to state 45
+    RB              reduce using rule 6 (commande -> WHILE LP expression RP LB commande RB .)
+    SEQ             reduce using rule 6 (commande -> WHILE LP expression RP LB commande RB .)
 
 
 state 44
 
-    (6) commande -> WHILE LP expression RP LB commande RB .
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ . returnmainvalue RB
+    (15) returnmainvalue -> . RETURN NUMBER SEQ
 
-    SEQ             reduce using rule 6 (commande -> WHILE LP expression RP LB commande RB .)
-    RB              reduce using rule 6 (commande -> WHILE LP expression RP LB commande RB .)
+    RETURN          shift and go to state 45
 
+    returnmainvalue                shift and go to state 46
 
 state 45
 
-    (15) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB .
+    (15) returnmainvalue -> RETURN . NUMBER SEQ
 
-    $end            reduce using rule 15 (main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB .)
+    NUMBER          shift and go to state 47
+
+
+state 46
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue . RB
+
+    RB              shift and go to state 48
+
+
+state 47
+
+    (15) returnmainvalue -> RETURN NUMBER . SEQ
+
+    SEQ             shift and go to state 49
+
+
+state 48
+
+    (16) main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB .
+
+    $end            reduce using rule 16 (main -> typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB .)
+
+
+state 49
+
+    (15) returnmainvalue -> RETURN NUMBER SEQ .
+
+    RB              reduce using rule 15 (returnmainvalue -> RETURN NUMBER SEQ .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for SEQ in state 28 resolved as shift
-WARNING: shift/reduce conflict for OPBIN in state 39 resolved as shift
+WARNING: shift/reduce conflict for SEQ in state 33 resolved as shift
+WARNING: shift/reduce conflict for OPBIN in state 38 resolved as shift

@@ -67,7 +67,7 @@ t_ignore = " \t"
 lexer = lex.lex()
 
 uncode = " while (x) { int float x = z + 33+45 ; x = 18 }"
-lexer.input("main(z, t) { %s ; print (y) ; return -72;}" % uncode)
+lexer.input("main(z, t) { %s ; print (y) ; return 72;}" % uncode)
 
 while True:
     tok = lexer.token()
@@ -183,7 +183,7 @@ start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
 arbre = parser.parse("int main(int rien) {float Z; float titi; while (X) { Y = Y + 5 ; "
-                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return -10;} ")
+                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return 10;} ")
 # arbre = parser.parse("float main(int rien, float tout, int affaire, float affaire) {float Z; int Z; float rien; int autre; float titi; while (X) { Y = Y + 5 ; "
 #                      "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return 0;} ")
 print(arbre)
