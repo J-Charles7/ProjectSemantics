@@ -201,6 +201,12 @@ pop eax
             for var_declaree in var_decl:
                 if param[1] == var_declaree[1]:
                     declaree = 1
+                    if param[0] == var_declaree[0]:
+                        declaree = 2
+            if declaree == 1:
+                print('Erreur : variable %s déclarée (ligne %s) et utilisée en paramètre (ligne %s)'
+                      'dans le main mais avec des types différents'%
+                      (param[1], var_declaree[3], param[3]))
             if declaree == 0:
                 print('Erreur : variable %s non déclarée et utilisée en paramètre dans le main'
                       ' : ligne(s) %s' %
