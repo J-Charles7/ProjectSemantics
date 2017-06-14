@@ -146,14 +146,6 @@ pop eax
                     var_declarees.append(declItem.dec2List())
         return var_declarees
 
-    # Variables (pas les declarations) apparaissant dans le programme (declarees ou non)
-    # def vars_util(self):
-    #     vars_utilisees = []
-    #     if self.type == 'prog':
-            # vars_utilisees.append(self.sons[3].com2List())
-            # vars_utilisees.append(self.sons[4].exp2List())
-        #     vars_utilisees = self.sons[3].com2List() + list(self.sons[4].exp2List())
-        # return vars_utilisees
 
     def epurerListeVarsDecl (self, monSet):
         monSetPerfect = []
@@ -182,13 +174,16 @@ pop eax
         for i in range(len(monSet)):
             if not corr.__contains__(i):
                 monSetPerfect.append(monSet[i])
-        print('Perfect %s' % (monSetPerfect))
+        # print('Perfect %s' % (monSetPerfect))
         return monSetPerfect
 
     def verifier_variables(self):
         var_util = self.epurerListeVarsDecl(self.pvars())
-        print('Var_util : %s ' % var_util)
+        var_params = self.vars_main()
+        print('Variables du main : %s ' % var_params)
         var_decl = self.vars_decl()
+
+        #Verification de variables utilisees declarees au prealable
         for var_utilisee in var_util:
             declaree = 0
             infos_var_utilisee = str.split(var_utilisee,';')
@@ -198,6 +193,36 @@ pop eax
             if declaree == 0:
                 print('Erreur : variable %s non déclarée : ligne(s) %s' %
                       (infos_var_utilisee[0], infos_var_utilisee[1]))
+
+        #Verification de la declaration des variables passees en paramètre dans le main
+        var_params = self.vars_main()
+        for param in var_params:
+            declaree = 0
+            for var_declaree in var_decl:
+                if param[1] == var_declaree[1]:
+                    declaree = 1
+            if declaree == 0:
+                print('Erreur : variable %s non déclarée et utilisée en paramètre dans le main'
+                      ' : ligne(s) %s' %
+                      (param[1], param[3]))
+
+        #Verification de non redondance des variables passees en paramètre dans le main
+        for i in range(len(var_params)):
+            for j in range(i + 1, len(var_params)):
+                if var_params[i][1] == var_params[j][1]:
+                    print('Erreur : repassage en paramètre au main de la variable %s '
+                          '(ligne %s) déjà utilisée (ligne %s)' %
+                          ((var_params[j][1]), var_params[j][3], var_params[i][3]))
+
+        # Verification de non redondante dans les declarations des variables
+        for i in range(len(var_decl)):
+            for j in range(i + 1, len(var_decl)):
+                if var_decl[i][1] == var_decl[j][1]:
+                    print('Erreur : redéclaration de la variable %s (ligne %s) déjà déclarée (ligne %s)' %
+                          ((var_decl[j][1]), var_decl[j][3], var_decl[i][3]))
+
+    def verifier_typage_operations(self):
+        pass
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
