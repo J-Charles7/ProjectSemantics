@@ -51,7 +51,7 @@ finboucle%s:
             return vars
         elif self.type == 'commande':
             if self.value == 'asgnt':
-                vars.add(self.sons[0])
+                vars.add(self.sons[0]+';'+str(self.sons[2]))
                 vars.update(self.sons[1].pvars())
                 return vars
             else:
@@ -66,7 +66,7 @@ finboucle%s:
             elif self.type == 'NUMBER':
                 return vars
             else:
-                vars.add(self.value)
+                vars.add(self.value+';'+str(self.sons[0]))
                 return vars
 
     def init_var(self, var, i):
@@ -147,17 +147,26 @@ pop eax
         return var_declarees
 
     # Variables (pas les declarations) apparaissant dans le programme (declarees ou non)
-    def vars_util(self):
-        vars_utilisees = []
-        if self.type == 'prog':
+    # def vars_util(self):
+    #     vars_utilisees = []
+    #     if self.type == 'prog':
             # vars_utilisees.append(self.sons[3].com2List())
             # vars_utilisees.append(self.sons[4].exp2List())
-            vars_utilisees = self.sons[3].com2List() + list(self.sons[4].exp2List())
-        return vars_utilisees
+        #     vars_utilisees = self.sons[3].com2List() + list(self.sons[4].exp2List())
+        # return vars_utilisees
 
 
     def verifier_variables(self):
-        pass
+        var_util = self.pvars()
+        var_decl = self.vars_decl()
+        for var_utilisee in var_util:
+            declaree = 0
+            infos_var_utilisee = str.split(var_utilisee,';')
+            for var_declaree in var_decl:
+                if var_utilisee == var_declaree[1]:
+                    declaree = 1
+            if declaree == 0:
+                print('Erreur : variable %s non déclarée : ligne %s' % (infos_var_utilisee[0], infos_var_utilisee[1]))
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))

@@ -153,7 +153,7 @@ precedence = ('left', 'SEQ')
 arbre = parser.parse("float main(int rien, float tout) { int rien; int autre; float titi; while (X) { Y = Y + 5 ; "
                      "\n X = s - 6 } ; print (Z) ; } ")
 print(arbre)
-print(arbre.pvars())
+print(arbre.verifier_variables())
 
 
 
