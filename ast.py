@@ -220,9 +220,49 @@ pop eax
                       'valeur de retour attendue de type %s (ligne %s)' %
                       (self.sons[5].value, self.sons[5].sons[1], self.sons[0][0], self.sons[0][1]))
 
-    def verifier_typage_operations(self):
+    #Fonction pour retrouver le type d'une variable a partir de son nom
+    def trouverType(self, maVar):
+        var_declarees = []
+        var_declarees = self.vars_decl()
+        trouve = 0
+        for item in var_declarees:
+            if item[1] == maVar:
+                return item[0]
+        return False
 
-        pass
+    def type_operandes_expression(self):
+        if self.sons[4].type == 'ID':
+            return list(self.trouverType(self.sons[4].value))
+        elif self.sons[4].type == 'NUMBER':
+            if isinstance(self.sons[4].type, int):
+                return ['int']
+            else:
+                return ['float']
+        else:
+            return [self.sons[4][0].type_operandes_expression(), self.sons[4][1].type_operandes_expression()]
+
+
+    def verifier_typage_operations(self, expr):
+       typesOperandes = []
+       print('Lop : %s; Rop : %s' % (typesOperandes[0], typesOperandes[1]))
+       typesOperandes = expr.type_operandes_expression()
+       if len(typesOperandes) > 1:
+           if typesOperandes[0] == 'int' and typesOperandes[1] == 'float':
+               print('Erreur : tentative d\'affectation de valeur de type float à '
+                     'une variable de type int (ligne %s)' % (expr.sons[2]))
+
+
+                # if str(self.sons[4].value).__contains__('.') or
+                #    str(self.sons[4].value).__contains__('e') or
+
+        #AST.type = OPBIN - expression
+        #AST.type = commande, AST.value = asgnt
+        # if self.type == 'prog':
+        #     if self.sons[3].type == 'OPBIN':
+        #         if self.sons[3][0].type == 'ID':
+        #             if self.trouverType(self.sons[3][0].value) is not False:
+        #                 typeOperandeG = self.trouverType(self.sons[3][0].value)
+        #         else
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))

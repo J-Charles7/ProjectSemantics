@@ -3,8 +3,7 @@ mots_cle = {'while' : 'WHILE', 'main' : 'MAIN', 'return': 'RETURN', 'print' : 'P
 types = {'float' : 'FLOAT', 'int' : 'INT'}
 tokens = ['NUMBER', 'ID', 'OPBIN', 'LP', 'RP', 'LB', 'RB', 'EQUAL', 'SEQ', 'COMMA'] \
          + list(types.values())\
-         + list(mots_cle.values())\
-         # + ['ENTIER', 'REEL']
+         + list(mots_cle.values())
 def t_OPBIN(t):
     r"[\+\-\*\=\<\>\!\/]+"
     if t.value == '=':
@@ -18,31 +17,11 @@ t_RB = r'\}'
 t_SEQ = r';'
 t_COMMA = r','
 
-# def t_ENTIER(t):
-#     # r'-?\d+'
-#     r'[+]?[0-9]+'
-#     t.value = int(t.value)
-#     return t
-#
-# def t_REEL(t):
-#     r'-?\d+\.\d*([eE]-?\d+)?'
-#     # r'-?\d +.\d + '
-#     # r'(?<=\s)[+-]?[0-9]+\.[0-9]+([Ee][+-]?[0-9]+)?(?=\s)'
-#     t.value = float(t.value)
-#     return t
-
 def t_NUMBER(t):
-    # r'(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]+)?'
-    # r"\d+"
-    # t.value = int(t.value)
-    # r'-?\d+\.\d*([eE]-?\d+)?'
-    # r'^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
     r'(^[+-]?0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]+)?'
     if '.' in t.value or 'e' in t.value or '-' in t.value:
-        # t.type = 'float'
         t.value = float(t.value)
     else:
-        # t.type = 'int'
         t.value = (int)(t.value)
 
     return t
@@ -58,10 +37,6 @@ def t_ID(t):
     if t.value in types:
         t.type = types[t.value]
     return t
-
-# def t_error(t):
-#     raise SyntaxError("syntax error on line %d near '%s'" %
-#         (t.lineno, t.value))
 
 t_ignore = " \t"
 lexer = lex.lex()
@@ -80,10 +55,6 @@ import ply.yacc as yacc
 import ast
 
 def p_expression(p):
-    # '''expression : ENTIER
-    #               | REEL
-    #               | ID
-    #               | expression OPBIN expression'''
     '''expression : NUMBER
                   | ID
                   | expression OPBIN expression'''
@@ -156,10 +127,6 @@ def p_typeetmain(p):
     p[0] = [p[1], p.lineno(1)]
 
 def p_returnmainvalue(p):
-    # '''
-    # returnmainvalue : RETURN ENTIER SEQ
-    #                 | RETURN FLOAT SEQ
-    # '''
     '''
     returnmainvalue : RETURN NUMBER SEQ
     '''
@@ -169,9 +136,7 @@ def p_returnmainvalue(p):
     elif isinstance(p[2], float):
         p[0] = ast.AST('return', 'float')
         p[0].sons = [p[2], p.lineno(2)]
-# '''
-# main : MAIN LP listevariables RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ RB
-# '''
+
 def p_main(p):
     '''
     main : typeetmain LP listeparamsmain RP LB listedeclarations commande SEQ PRINT LP expression RP SEQ returnmainvalue RB
