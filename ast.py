@@ -221,48 +221,53 @@ pop eax
                       (self.sons[5].value, self.sons[5].sons[1], self.sons[0][0], self.sons[0][1]))
 
     #Fonction pour retrouver le type d'une variable a partir de son nom
-    def trouverType(self, maVar):
-        var_declarees = []
-        var_declarees = self.vars_decl()
+    def trouverType(self, maVar, var_declarees):
+    #     var_declarees = []
+    #     var_declarees = self.vars_decl()
+        # print(maVar)
+        # print('var decl dans trouverType: %s' % (var_declarees))
         trouve = 0
         for item in var_declarees:
             if item[1] == maVar:
                 return item[0]
-        return False
+        return []
 
-    def type_operandes_expression(self):
-        if self.sons[4].type == 'ID':
-            return list(self.trouverType(self.sons[4].value))
-        elif self.sons[4].type == 'NUMBER':
-            if isinstance(self.sons[4].type, int):
+    def type_operandes_expression(self, var_declarees):
+        if self.type == 'ID':
+            # print('Ici %s ' %list(self.trouverType(self.value, var_declarees)))
+            return [self.trouverType(self.value, var_declarees)]
+            # return list(self.trouverType(self.value, var_declarees))
+        elif self.type == 'NUMBER':
+            if isinstance(self.value, int):
+                print('NUMBER int')
                 return ['int']
             else:
+                print('NUMBER float')
                 return ['float']
         else:
-            return [self.sons[4][0].type_operandes_expression(), self.sons[4][1].type_operandes_expression()]
+            print('LOP : %s - ROP : %s ' %(self.sons[0], self.sons[1]))
+            return [self.sons[0].type_operandes_expression(var_declarees),
+                    self.sons[1].type_operandes_expression(var_declarees)]
 
 
-    def verifier_typage_operations(self, expr):
+    def verifier_typage_operations(self, expr, var_declarees):
        typesOperandes = []
-       print('Lop : %s; Rop : %s' % (typesOperandes[0], typesOperandes[1]))
-       typesOperandes = expr.type_operandes_expression()
+       typesOperandes = expr.type_operandes_expression(var_declarees)
        if len(typesOperandes) > 1:
-           if typesOperandes[0] == 'int' and typesOperandes[1] == 'float':
+           print('Lop : %s; Rop : %s' % (typesOperandes[0], typesOperandes[1]))
+           if typesOperandes[0][0] == 'int' and typesOperandes[1][0] == 'float':
                print('Erreur : tentative d\'affectation de valeur de type float à '
                      'une variable de type int (ligne %s)' % (expr.sons[2]))
+       else:
+            print('TypeOp = %s' % (typesOperandes))
 
 
-                # if str(self.sons[4].value).__contains__('.') or
-                #    str(self.sons[4].value).__contains__('e') or
-
-        #AST.type = OPBIN - expression
-        #AST.type = commande, AST.value = asgnt
-        # if self.type == 'prog':
-        #     if self.sons[3].type == 'OPBIN':
-        #         if self.sons[3][0].type == 'ID':
-        #             if self.trouverType(self.sons[3][0].value) is not False:
-        #                 typeOperandeG = self.trouverType(self.sons[3][0].value)
-        #         else
+    def verifier_operations_main(self):
+        if self.type == 'prog':
+            var_declarees = []
+            var_declarees = self.vars_decl()
+            # print('var decl %s ' % (var_declarees))
+            self.verifier_typage_operations(self.sons[4], var_declarees)
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
