@@ -120,10 +120,6 @@ pop eax
                     var_params_main.append(paramItem.dec2List())
         return var_params_main
 
-    def afficherListe(self, listeA):
-        for var in listeA:
-            print(var)
-
     #Variables declarees dans le programme main
     def vars_decl(self):
         var_declarees = []
@@ -131,7 +127,7 @@ pop eax
             if len(self.sons) != 0:
                 for declItem in self.sons[2]:
                     var_declarees.append(declItem.dec2List())
-        return var_declarees
+        return var_declarees + self.vars_main()
 
 
     def epurerListeVarsDecl (self, monSet):
@@ -164,12 +160,12 @@ pop eax
         return monSetPerfect
 
     def verifier_variables(self):
+        erreur_trouvee = False
         var_util = self.epurerListeVarsDecl(self.pvars())
         var_params = self.vars_main()
-        print('Variables du main : \'%s\' ' % var_params)
         var_decl = self.vars_decl()
 
-        #Verification de variables utilisees declarees au prealable
+        #Verification de variables utilisees dans le corps du programme declarees au prealable
         for var_utilisee in var_util:
             declaree = 0
             infos_var_utilisee = str.split(var_utilisee,';')
@@ -179,24 +175,27 @@ pop eax
             if declaree == 0:
                 print('Erreur : variable \'%s\' non déclarée : ligne(s) %s' %
                       (infos_var_utilisee[0], infos_var_utilisee[1]))
+                erreur_trouvee = True
 
         #Verification de la declaration des variables passees en paramètre dans le main
-        var_params = self.vars_main()
-        for param in var_params:
-            declaree = 0
-            for var_declaree in var_decl:
-                if param[1] == var_declaree[1]:
-                    declaree = 1
-                    if param[0] == var_declaree[0]:
-                        declaree = 2
-            if declaree == 1:
-                print('Erreur : variable \'%s\' déclarée (ligne %s) et utilisée en paramètre (ligne %s) '
-                      'dans le main mais avec des types différents'%
-                      (param[1], var_declaree[3], param[3]))
-            if declaree == 0:
-                print('Erreur : variable \'%s\' non déclarée et utilisée en paramètre dans le main'
-                      ' : ligne(s) %s' %
-                      (param[1], param[3]))
+        # var_params = self.vars_main()
+        # for param in var_params:
+        #     declaree = 0
+        #     for var_declaree in var_decl:
+        #         if param[1] == var_declaree[1]:
+        #             declaree = 1
+        #             if param[0] == var_declaree[0]:
+        #                 declaree = 2
+        #     if declaree == 1:
+        #         print('Erreur : variable \'%s\' déclarée (ligne %s) et utilisée en paramètre (ligne %s) '
+        #               'dans le main mais avec des types différents'%
+        #               (param[1], var_declaree[3], param[3]))
+        #         erreur_trouvee = True
+        #     if declaree == 0:
+        #         print('Erreur : variable \'%s\' non déclarée et utilisée en paramètre dans le main'
+        #               ' : ligne(s) %s' %
+        #               (param[1], param[3]))
+        #         erreur_trouvee = True
 
         #Verification de non redondance des variables passees en paramètre dans le main
         for i in range(len(var_params)):
@@ -205,6 +204,7 @@ pop eax
                     print('Erreur : repassage en paramètre au main de la variable \'%s\' '
                           '(ligne %s) déjà utilisée (ligne %s)' %
                           ((var_params[j][1]), var_params[j][3], var_params[i][3]))
+                    erreur_trouvee = True
 
         # Verification de non redondante dans les declarations des variables
         for i in range(len(var_decl)):
@@ -212,14 +212,18 @@ pop eax
                 if var_decl[i][1] == var_decl[j][1]:
                     print('Erreur : redéclaration de la variable \'%s\' (ligne %s) déjà déclarée (ligne %s)' %
                           ((var_decl[j][1]), var_decl[j][3], var_decl[i][3]))
+                    erreur_trouvee = True
+        return erreur_trouvee
 
     def verifier_valeur_retour(self):
+        erreur_trouvee = False
         if self.type == 'prog':
-            print('Type attendu : \'%s\' et Type reçu : \'%s\'' % (self.sons[0][0], self.sons[5].value))
             if self.sons[0][0] == 'int' and self.sons[5].value == 'float':
-                print('Erreur : valeur de retour trouvée de type \'%s\' (ligne %s) et '
-                      'valeur de retour attendue de type \'%s\' (ligne %s)' %
-                      (self.sons[5].value, self.sons[5].sons[1], self.sons[0][0], self.sons[0][1]))
+                print('Erreur : valeur de attendue attendue de type \'%s\' (ligne %s) et '
+                      'valeur de retour trouvée de type \'%s\' (ligne %s)' %
+                      (self.sons[0][0], self.sons[0][1], self.sons[5].value, self.sons[5].sons[1]))
+                erreur_trouvee = True
+        return erreur_trouvee
 
     #Fonction pour retrouver le type d'une variable a partir de son nom
     def trouverType(self, maVar, var_declarees):
@@ -240,7 +244,6 @@ pop eax
         else:
             lop = self.sons[0].type_operandes_expression(var_declarees)
             rop = self.sons[1].type_operandes_expression(var_declarees)
-            # print('LOP : %s - ROP : %s ' %(self.sons[0], self.sons[1]))
             if lop[0] != rop[0]:
                 return ['float']
             else:
@@ -253,8 +256,10 @@ pop eax
                 rop = self.sons[1].type_operandes_expression(var_declarees)
                 if lop == 'int' and rop[0] == 'float':
                     print('Erreur : tentative d\'affectation de valeur de type \'float\' à '
-                              'une variable (\'%s\') de type \'int\' (ligne %s)' %
+                              'une variable (\'%s\') de type \'int\' : ligne %s' %
                           (self.sons[0], self.sons[2]))
+                    #Reponse a la question : erreur trouvee?
+                    return True
                 else:
                     return [lop, rop[0]]
             elif self.value == 'seq':
@@ -266,29 +271,28 @@ pop eax
 
 
     def verifier_typage_commandes(self, com, var_declarees):
-       typesOperandes = []
-       typesOperandes = com.type_operandes_commande(var_declarees)
+       # typesOperandes = []
+        erreur_trouvee = False
+        typesOperandes = com.type_operandes_commande(var_declarees)
+        print('Problème de type dans commande : %s' % typesOperandes)
+        if typesOperandes == True:
+            erreur_trouvee = True
+        return erreur_trouvee
+
 
     def verifier_typage_operations(self, expr, var_declarees):
        typesOperandes = []
        typesOperandes = expr.type_operandes_expression(var_declarees)
-       # if len(typesOperandes) > 1:
-           # print('Lop : %s; Rop : %s' % (typesOperandes[0], typesOperandes[1]))
-           # if typesOperandes[0][0] == 'int' and typesOperandes[1][0] == 'float':
-           #     print('Erreur : tentative d\'affectation de valeur de type float à '
-           #           'une variable de type int (ligne %s)' % (expr.sons[2]))
-       # else:
-       #      print('TypeOp = %s' % (typesOperandes))
 
 
     def verifier_operations_main(self):
+        erreur_trouvee = False
         if self.type == 'prog':
             var_declarees = []
             var_declarees = self.vars_decl()
             self.verifier_typage_operations(self.sons[4], var_declarees)
-            self.verifier_typage_commandes(self.sons[3], var_declarees)
-            #Verification des expressions dans les commandes
-            # self.verifier_typage_operations()
+            erreur_trouvee = self.verifier_typage_commandes(self.sons[3], var_declarees)
+        return erreur_trouvee
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
@@ -308,3 +312,10 @@ pop eax
         moule = moule.replace('EVAL_OUTPUT', self.sons[2].e_toAsm())
         return moule
 
+    def analyses (self):
+        if self.type == 'prog':
+            un = self.verifier_variables()
+            deux = self.verifier_operations_main()
+            trois = self.verifier_valeur_retour()
+            if un == False and deux == False and trois == False:
+                self.p_toAsm()

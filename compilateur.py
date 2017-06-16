@@ -48,12 +48,12 @@ lexer = lex.lex()
 uncode = " while (x) { int float x = z + 33+45 ; x = 18 }"
 lexer.input("main(z, t) { %s ; print (y) ; return 72;}" % uncode)
 
-while True:
-    tok = lexer.token()
-    if tok:
-        print(tok)
-    else:
-        break
+# while True:
+#     tok = lexer.token()
+#     if tok:
+#         print(tok)
+#     else:
+#         break
 
 import ply.yacc as yacc
 import ast
@@ -155,19 +155,28 @@ def p_main(p):
 start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
-arbre = parser.parse("int main(int rien) {float s; int t; float v; int gil;"
+arbre = parser.parse("int main(int rien) {int t;"
+                     "\n float v; int gil; float s;"
                      "\n float u; int X; float Z; float titi; int Y; while (X) { Y = Y + 5 ; "
                      "\n t = u - v; "
                      "\n X = s - 6; "
                      "\n s = X * 3; "
-                     "\n gil = 0.0} ; print (2) ; return 10;} ")
+                     "\n rien = X * 3; "
+                     "\n gil = 0} ; print (X) ; return 10;} ")
+# arbre = parser.parse("int main(int rien, float rien) {int t; int t; "
+#                      "\n float t; float v; int gil;"
+#                      "\n float u; int X; float Z; float titi; int Y; while (X) { Y = Y + 5 ; "
+#                      "\n t = u - v; "
+#                      "\n X = s - 6; "
+#                      "\n s = X * 3; "
+#                      "\n gil = 0.0} ; print (2) ; return 10.0;} ")
 # arbre = parser.parse("float main(int rien, float tout, int affaire, float affaire) {float Z; int Z; float rien; int autre; float titi; while (X) { Y = Y + 5 ; "
 #                      "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return 0;} ")
 # print(arbre)
 # print(arbre.verifier_variables())
 # print(arbre.verifier_valeur_retour())
 # arbre.verifier_valeur_retour()
-arbre.verifier_operations_main()
+arbre.analyses()
 
 
 
