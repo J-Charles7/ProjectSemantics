@@ -148,7 +148,7 @@ start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
 arbre = parser.parse("int main(int rien) {int X; float Z; float titi; while (X) { Y = Y + 5 ; "
-                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (X * 1.0) ; return 10;} ")
+                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (3 * 2) ; return 10;} ")
 # arbre = parser.parse("float main(int rien, float tout, int affaire, float affaire) {float Z; int Z; float rien; int autre; float titi; while (X) { Y = Y + 5 ; "
 #                      "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return 0;} ")
 # print(arbre)

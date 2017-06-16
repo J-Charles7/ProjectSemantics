@@ -245,21 +245,27 @@ pop eax
                 print('NUMBER float')
                 return ['float']
         else:
+            lop = self.sons[0].type_operandes_expression(var_declarees)
+            rop = self.sons[1].type_operandes_expression(var_declarees)
             print('LOP : %s - ROP : %s ' %(self.sons[0], self.sons[1]))
-            return [self.sons[0].type_operandes_expression(var_declarees),
-                    self.sons[1].type_operandes_expression(var_declarees)]
+            if lop[0] != rop[0]:
+                return ['float']
+            else:
+                return lop
+
 
 
     def verifier_typage_operations(self, expr, var_declarees):
        typesOperandes = []
        typesOperandes = expr.type_operandes_expression(var_declarees)
-       if len(typesOperandes) > 1:
-           print('Lop : %s; Rop : %s' % (typesOperandes[0], typesOperandes[1]))
-           if typesOperandes[0][0] == 'int' and typesOperandes[1][0] == 'float':
-               print('Erreur : tentative d\'affectation de valeur de type float à '
-                     'une variable de type int (ligne %s)' % (expr.sons[2]))
-       else:
-            print('TypeOp = %s' % (typesOperandes))
+       print ('Résultat de l\'opération de type : %s' % (typesOperandes))
+       # if len(typesOperandes) > 1:
+           # print('Lop : %s; Rop : %s' % (typesOperandes[0], typesOperandes[1]))
+           # if typesOperandes[0][0] == 'int' and typesOperandes[1][0] == 'float':
+           #     print('Erreur : tentative d\'affectation de valeur de type float à '
+           #           'une variable de type int (ligne %s)' % (expr.sons[2]))
+       # else:
+       #      print('TypeOp = %s' % (typesOperandes))
 
 
     def verifier_operations_main(self):
