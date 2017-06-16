@@ -1,3 +1,10 @@
+# import enfloat
+# from entierFloatException import EntierFloatException as enReelException
+
+#Exception lancée lors d'une tentative d'affectation de valeur float a une variable int
+class EntierFloat(Exception):
+    def __init__(self, message):
+        self.message = message
 
 class AST:
     identifiant = 0
@@ -255,11 +262,12 @@ pop eax
                 lop = self.trouverType(self.sons[0], var_declarees)
                 rop = self.sons[1].type_operandes_expression(var_declarees)
                 if lop == 'int' and rop[0] == 'float':
-                    print('Erreur : tentative d\'affectation de valeur de type \'float\' à '
+                    print('Erreur : tentative d\'affectation de valeur '
+                                               'de type \'float\' à '
                               'une variable (\'%s\') de type \'int\' : ligne %s' %
                           (self.sons[0], self.sons[2]))
+                    raise EntierFloat('Mauvaise affectation')
                     #Reponse a la question : erreur trouvee?
-                    return True
                 else:
                     return [lop, rop[0]]
             elif self.value == 'seq':
@@ -271,14 +279,8 @@ pop eax
 
 
     def verifier_typage_commandes(self, com, var_declarees):
-       # typesOperandes = []
-        erreur_trouvee = False
+        typesOperandes = []
         typesOperandes = com.type_operandes_commande(var_declarees)
-        print('Problème de type dans commande : %s' % typesOperandes)
-        if typesOperandes == True:
-            erreur_trouvee = True
-        return erreur_trouvee
-
 
     def verifier_typage_operations(self, expr, var_declarees):
        typesOperandes = []
@@ -286,13 +288,11 @@ pop eax
 
 
     def verifier_operations_main(self):
-        erreur_trouvee = False
         if self.type == 'prog':
             var_declarees = []
             var_declarees = self.vars_decl()
             self.verifier_typage_operations(self.sons[4], var_declarees)
-            erreur_trouvee = self.verifier_typage_commandes(self.sons[3], var_declarees)
-        return erreur_trouvee
+            self.verifier_typage_commandes(self.sons[3], var_declarees)
 
     def init_vars(self, moule):
         moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
@@ -315,7 +315,9 @@ pop eax
     def analyses (self):
         if self.type == 'prog':
             un = self.verifier_variables()
-            deux = self.verifier_operations_main()
+            self.verifier_operations_main()
             trois = self.verifier_valeur_retour()
-            if un == False and deux == False and trois == False:
+            # print('Prob var : %s' % un)
+            # print('Prob ret : %s' % trois)
+            if un is False and trois is False:
                 self.p_toAsm()
