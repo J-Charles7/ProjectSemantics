@@ -18,7 +18,7 @@ t_SEQ = r';'
 t_COMMA = r','
 
 def t_NUMBER(t):
-    r'(^[+-]?0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]+)?'
+    r'(^[+-]?0|[0-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]+)?'
     if '.' in t.value or 'e' in t.value or '-' in t.value:
         t.value = float(t.value)
     else:
@@ -38,6 +38,10 @@ def t_ID(t):
         t.type = types[t.value]
     return t
 
+def t_error(t):
+    print("Caractère illégal '%s' à la ligne %s" % (t.value[0], t.lineno))
+    t.lexer.skip(1)
+
 t_ignore = " \t"
 lexer = lex.lex()
 
@@ -53,6 +57,10 @@ while True:
 
 import ply.yacc as yacc
 import ast
+
+def p_error(p):
+    print("Erreur de syntaxe dans l'écriture du programme MINI-C ! \n "
+          "Ligne %s : mot '%s'" % (p.lineno, p.value))
 
 def p_expression(p):
     '''expression : NUMBER
@@ -147,8 +155,12 @@ def p_main(p):
 start = 'main'
 parser = yacc.yacc()
 precedence = ('left', 'SEQ')
-arbre = parser.parse("int main(int rien) {int X; float Z; float titi; while (X) { Y = Y + 5 ; "
-                     "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (3 * 2) ; return 10;} ")
+arbre = parser.parse("int main(int rien) {float s; int t; float v; int gil;"
+                     "\n float u; int X; float Z; float titi; int Y; while (X) { Y = Y + 5 ; "
+                     "\n t = u - v; "
+                     "\n X = s - 6; "
+                     "\n s = X * 3; "
+                     "\n gil = 0.0} ; print (2) ; return 10;} ")
 # arbre = parser.parse("float main(int rien, float tout, int affaire, float affaire) {float Z; int Z; float rien; int autre; float titi; while (X) { Y = Y + 5 ; "
 #                      "\n t = u - v; \n X = s - 6; \n s = X * 3 } ; print (Z) ; return 0;} ")
 # print(arbre)
