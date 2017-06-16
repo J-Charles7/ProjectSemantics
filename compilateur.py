@@ -161,7 +161,7 @@ arbre = parser.parse("int main(int rien) {int t;"
                      "\n u = u - v; "
                      "\n X = X - 6; "
                      "\n s = X * 3; "
-                     "\n rien = X * 3; "
+                     "\n rien = X / 3; "
                      "\n gil = 0} ; print (X * 0) ; return 10;} ")
 # arbre = parser.parse("int main(int rien, float rien) {int t; int t; "
 #                      "\n float t; float v; int gil;"

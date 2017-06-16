@@ -1,5 +1,5 @@
 global main
-extern printf, atoi
+extern printf, atoi, atof
 
 section .data
 message: db 'Hello world %d',10,0

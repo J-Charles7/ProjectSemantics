@@ -80,12 +80,22 @@ finboucle%s:
                 vars.add(self.value+';'+str(self.sons[0]))
                 return vars
 
-    def init_var(self, var, i):
+    def init_var_int(self, var, i):
         return '''mov ebx, [eax + %s]
 push eax
 push ebx
 call atoi
 add esp, 4
+mov [%s], eax
+pop eax
+''' % (str(4*(i+1)), var)
+
+    def init_var_float(self, var, i):
+            return '''mov ebx, [eax + %s]
+push eax
+push ebx
+call atof
+fadd esp, 4
 mov [%s], eax
 pop eax
 ''' % (str(4*(i+1)), var)
@@ -122,7 +132,9 @@ pop eax
         elif self.type == 'NUMBER':
             return  False
         elif self.type == 'OPBIN':
+            print("Opérateur = %s - Type = %s" % (self.value, type(self.value)))
             if self.value == '/' :
+                print("Division présente")
                 if (isinstance(self.sons[1], float) and float(self.sons[1]) == float(0)) or \
                         (isinstance(self.sons[1], int) and int(self.sons[1]) == int(0)):
                     print('Erreur : tentative de division par \'zéro\': ligne %s' %
@@ -304,8 +316,6 @@ pop eax
                                                'de type \'float\' à '
                               'une variable (\'%s\') de type \'int\' : ligne %s' %
                           (self.sons[0], self.sons[2]))
-                    # raise EntierFloat('Mauvaise affectation', 'DIVISION PAR ZERO')
-                    #Reponse a la question : erreur trouvee?
                 else:
                     return [lop, rop[0]]
             elif self.value == 'seq':
@@ -332,12 +342,21 @@ pop eax
             self.verifier_typage_operations(self.sons[4], var_declarees)
             self.verifier_typage_commandes(self.sons[3], var_declarees)
 
-    def init_vars(self, moule, vars_decl):
-        moule = moule.replace('LEN_INPUT',str(1+len(vars_decl)))
-        init_var = [self.init_var(vars_decl[i],i) for i in range (len(vars_decl))]
-        # moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
-        # init_var = [self.init_var(self.sons[0][i],i) for i in range (len(self.sons[0]))]
-        moule = moule.replace('VAR_INIT', '\n'.join(init_var))
+    def init_vars(self, moule, vars_decl_int, vars_decl_float, vars_params):
+        moule = moule.replace('LEN_INPUT_INT',str(1+len(vars_decl_int)))
+        init_var_int = []
+        for i in range(len(vars_decl_int)):
+            for j in range(len(vars_params)):
+                if vars_decl_int[i] != vars_params[i][1]:
+                    init_var_int.append(self.init_var_int(vars_decl_int[i],i))
+                else:
+                    init_var_int.append(self.init_var_int_main(vars_decl_int[i], i, valeur))
+
+        moule = moule.replace('VAR_INIT_INT', '\n'.join(init_var_int))
+
+        moule = moule.replace('LEN_INPUT_FLOAT', str(1 + len(vars_decl_float)))
+        init_var_float = [self.init_var(vars_decl_float[i], i) for i in range(len(vars_decl_float))]
+        moule = moule.replace('VAR_INIT_FLOAT', '\n'.join(init_var_float))
         return moule
 
     def p_toAsm(self):
@@ -353,17 +372,13 @@ pop eax
                 vars_declarees_int.append(item[1])
             elif item[0] == 'float':
                 vars_declarees_float.append(item[1])
-        # print('INT : %s ' %vars_declarees_int)
-        # print('FLOAT : %s ' %vars_declarees_float)
         vars_declarees_intASM = {'%s: dd 0' % v for v in vars_declarees_int}
         vars_declarees_floatASM = {'%s: dd 0' % v for v in vars_declarees_float}
-        # print('INT : %s ' % vars_declarees_intASM)
-        # print('FLOAT : %s ' % vars_declarees_floatASM)
         var_decl_int = '\n'.join(vars_declarees_intASM)
         var_decl_float = '\n'.join(vars_declarees_floatASM)
         moule = moule.replace('VAR_DECL_INT', var_decl_int)
         moule = moule.replace('VAR_DECL_FLOAT', var_decl_float)
-        moule = self.init_vars(moule, vars_declarees_int + vars_declarees_float)
+        moule = self.init_vars(moule, vars_declarees_int, vars_declarees_float, self.vars_main())
         moule = moule.replace('COMMAND_EXEC', self.sons[3].c_toAsm())
         moule = moule.replace('EVAL_OUTPUT', self.sons[4].e_toAsm())
         return moule
@@ -374,7 +389,5 @@ pop eax
             # deux = self.verifier_division()
             self.verifier_operations_main()
             trois = self.verifier_valeur_retour()
-            # print('Prob var : %s' % un)
-            # print('Prob ret : %s' % trois)
             if un is False and trois is False:
                 print(self.p_toAsm())
