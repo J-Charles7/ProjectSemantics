@@ -157,12 +157,12 @@ parser = yacc.yacc()
 precedence = ('left', 'SEQ')
 arbre = parser.parse("int main(int rien) {int t;"
                      "\n float v; int gil; float s;"
-                     "\n float u; int X; float Z; float titi; int Y; while (X) { Y = Y + 5 ; "
+                     "\n float u; int X; float Z; float titi; int Y; while (X) { Y = Y * 0 ; "
                      "\n u = u - v; "
                      "\n X = X - 6; "
                      "\n s = X * 3; "
                      "\n rien = X * 3; "
-                     "\n gil = 0} ; print (X) ; return 10;} ")
+                     "\n gil = 0} ; print (X * 0) ; return 10;} ")
 # arbre = parser.parse("int main(int rien, float rien) {int t; int t; "
 #                      "\n float t; float v; int gil;"
 #                      "\n float u; int X; float Z; float titi; int Y; while (X) { Y = Y + 5 ; "

@@ -4,7 +4,8 @@ extern printf, atoi
 section .data
 message: db 'Hello world %d',10,0
 message_erreur: db 'Il faut rentrer %d entrees', 10, 0
-VAR_DECL
+VAR_DECL_INT
+VAR_DECL_FLOAT
 
 section .text
 main: 

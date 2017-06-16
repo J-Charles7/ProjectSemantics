@@ -3,8 +3,12 @@
 
 #Exception lancée lors d'une tentative d'affectation de valeur float a une variable int
 class EntierFloat(Exception):
-    def __init__(self, message):
+    def __init__(self, message, value):
         self.message = message
+        self.value = value
+
+        def __str__(self):
+            return (repr(self.value))
 
 class AST:
     identifiant = 0
@@ -111,6 +115,30 @@ pop eax
             var_exp.update(self.sons[0].exp2List())
             var_exp.update(self.sons[1].exp2List())
         return  var_exp
+
+    def est_division_par_zero_exp(self):
+        if self.type == 'ID':
+            return False
+        elif self.type == 'NUMBER':
+            return  False
+        elif self.type == 'OPBIN':
+            if self.value == '/' :
+                if (isinstance(self.sons[1], float) and float(self.sons[1]) == float(0)) or \
+                        (isinstance(self.sons[1], int) and int(self.sons[1]) == int(0)):
+                    print('Erreur : tentative de division par \'zéro\': ligne %s' %
+                          (self.sons[2]))
+                return True
+            else:
+                return self.sons[1].est_division_par_zero_exp()
+
+    def est_division_par_zero_com(self):
+        if self.type == 'commande':
+            if self.value == 'asgnt':
+                return False
+            elif self.value == 'seq':
+                return self.sons[0].est_division_par_zero_com() or self.sons[1].est_division_par_zero_com()
+            elif self.value == 'while':
+                return self.sons[0].est_division_par_zero_exp() or self.sons[1].est_division_par_zero_com()
 
     # Fonction transformant une declaration en liste
     # : typeVariable, nomVariable, ligneTypeVariable, ligneNomVariable
@@ -232,6 +260,12 @@ pop eax
                 erreur_trouvee = True
         return erreur_trouvee
 
+    def verifier_division(self):
+        if self.type == 'prog':
+            un = self.sons[4].est_division_par_zero_exp()
+            deux = self.sons[3].est_division_par_zero_com()
+        return (un or deux)
+
     #Fonction pour retrouver le type d'une variable a partir de son nom
     def trouverType(self, maVar, var_declarees):
         trouve = 0
@@ -266,7 +300,11 @@ pop eax
                                                'de type \'float\' à '
                               'une variable (\'%s\') de type \'int\' : ligne %s' %
                           (self.sons[0], self.sons[2]))
-                    raise EntierFloat('Mauvaise affectation')
+                    raise EntierFloat('DIVISION PAR ZERO','Erreur : tentative d\'affectation de valeur '
+                                               'de type \'float\' à '
+                              'une variable (\'%s\') de type \'int\' : ligne %s' %
+                          (self.sons[0], self.sons[2]))
+                    # raise EntierFloat('Mauvaise affectation', 'DIVISION PAR ZERO')
                     #Reponse a la question : erreur trouvee?
                 else:
                     return [lop, rop[0]]
@@ -294,30 +332,49 @@ pop eax
             self.verifier_typage_operations(self.sons[4], var_declarees)
             self.verifier_typage_commandes(self.sons[3], var_declarees)
 
-    def init_vars(self, moule):
-        moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
-        init_var = [self.init_var(self.sons[0][i],i) for i in range (len(self.sons[0]))]
+    def init_vars(self, moule, vars_decl):
+        moule = moule.replace('LEN_INPUT',str(1+len(vars_decl)))
+        init_var = [self.init_var(vars_decl[i],i) for i in range (len(vars_decl))]
+        # moule = moule.replace('LEN_INPUT',str(1+len(self.sons[0])))
+        # init_var = [self.init_var(self.sons[0][i],i) for i in range (len(self.sons[0]))]
         moule = moule.replace('VAR_INIT', '\n'.join(init_var))
         return moule
 
     def p_toAsm(self):
         f = open('moule.asm')
         moule = f.read()
-        vars = self.pvars()
-        dvars = {'%s: dd 0' % v for v in vars }
-        var_decl = '\n'.join(dvars)
-        moule = moule.replace('VAR_DECL', var_decl)
-        moule = self.init_vars(moule)
-        moule = moule.replace('COMMAND_EXEC', self.sons[1].c_toAsm())
-        moule = moule.replace('EVAL_OUTPUT', self.sons[2].e_toAsm())
+        vars_declarees_int = []
+        vars_declarees_float = []
+        vars_declarees_intASM = set()
+        vars_declarees_floatASM = set()
+        vars_declarees = self.vars_decl()
+        for item in vars_declarees:
+            if item[0] == 'int':
+                vars_declarees_int.append(item[1])
+            elif item[0] == 'float':
+                vars_declarees_float.append(item[1])
+        # print('INT : %s ' %vars_declarees_int)
+        # print('FLOAT : %s ' %vars_declarees_float)
+        vars_declarees_intASM = {'%s: dd 0' % v for v in vars_declarees_int}
+        vars_declarees_floatASM = {'%s: dd 0' % v for v in vars_declarees_float}
+        # print('INT : %s ' % vars_declarees_intASM)
+        # print('FLOAT : %s ' % vars_declarees_floatASM)
+        var_decl_int = '\n'.join(vars_declarees_intASM)
+        var_decl_float = '\n'.join(vars_declarees_floatASM)
+        moule = moule.replace('VAR_DECL_INT', var_decl_int)
+        moule = moule.replace('VAR_DECL_FLOAT', var_decl_float)
+        moule = self.init_vars(moule, vars_declarees_int + vars_declarees_float)
+        moule = moule.replace('COMMAND_EXEC', self.sons[3].c_toAsm())
+        moule = moule.replace('EVAL_OUTPUT', self.sons[4].e_toAsm())
         return moule
 
     def analyses (self):
         if self.type == 'prog':
             un = self.verifier_variables()
+            # deux = self.verifier_division()
             self.verifier_operations_main()
             trois = self.verifier_valeur_retour()
             # print('Prob var : %s' % un)
             # print('Prob ret : %s' % trois)
             if un is False and trois is False:
-                self.p_toAsm()
+                print(self.p_toAsm())
